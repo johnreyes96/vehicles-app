@@ -51,6 +51,6 @@ class _LoginScreenState extends State<LoginScreen> {
           print(_email);
         },
       ),
-    )
+    );
   }
 }
