@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:email_validator/email_validator.dart';
@@ -174,7 +175,7 @@ class _LoginScreenState extends State<LoginScreen> {
       body: jsonEncode(request)
     );
 
-    print(response);
+    print(response.body);
   }
 
   bool _validateFields() {
