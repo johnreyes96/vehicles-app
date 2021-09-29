@@ -4,8 +4,10 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:http/http.dart' as http;
+import 'package:vehicles_app/components/loader_component.dart';
 
 import 'package:vehicles_app/helpers/constants.dart';
+import 'package:vehicles_app/models/token.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({ Key? key }) : super(key: key);
@@ -18,27 +20,34 @@ class _LoginScreenState extends State<LoginScreen> {
   String _email = '';
   String _emailError = '';
   bool _emailShowError = false;
+
   String _password = '';
   String _passwordError = '';
   bool _passwordShowError = false;
+
   bool _rememberme = true;
   bool _passwordShow = false;
+
+  bool _showLoader = false;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            _showLogo(),
-            SizedBox(height: 20,),
-            _showEmail(),
-            _showPassword(),
-            _showRememberme(),
-            _showButtons(),
-          ],
-        )
+      body: Stack(
+        children: <Widget>[
+          Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              _showLogo(),
+              SizedBox(height: 20,),
+              _showEmail(),
+              _showPassword(),
+              _showRememberme(),
+              _showButtons()
+            ]
+          ),
+          _showLoader ? LoaderComponent(text: 'Por favor espere...') : Container()
+        ],
       ),
     );
   }
@@ -161,6 +170,10 @@ class _LoginScreenState extends State<LoginScreen> {
       return;
     }
 
+    setState(() {
+      _showLoader = true;
+    });
+
     Map<String, dynamic> request = {
       'username': _email,
       'password': _password
@@ -175,7 +188,22 @@ class _LoginScreenState extends State<LoginScreen> {
       body: jsonEncode(request)
     );
 
-    print(response.body);
+    setState(() {
+      _showLoader = false;
+    });
+
+    if (response.statusCode >= 400) {
+      setState(() {
+        _passwordShowError = true;
+        _passwordError = 'Email o contraseña incorrectos';
+      });
+      return;
+    }
+
+    var body = response.body;
+    var decodedJson = jsonDecode(body);
+    var token = Token.fromJson(decodedJson);
+    print(token.token);
   }
 
   bool _validateFields() {
