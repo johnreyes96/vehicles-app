@@ -1,5 +1,10 @@
-import 'package:email_validator/email_validator.dart';
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:email_validator/email_validator.dart';
+import 'package:http/http.dart' as http;
+
+import 'package:vehicles_app/helpers/constants.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({ Key? key }) : super(key: key);
@@ -146,21 +151,41 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  void _login() {
+  void _login() async {
+    setState(() {
+      _passwordShow = false;
+    });
+
     if (!_validateFields()) {
       return;
     }
+
+    Map<String, dynamic> request = {
+      'username': _email,
+      'password': _password
+    };
+    var url = Uri.parse('${Constants.apiUrl}/api/account/CreateToken');
+    var response = await http.post(
+      url,
+      headers: {
+        'content-Type': 'application/json',
+        'accept': 'application/json'
+      },
+      body: jsonEncode(request)
+    );
+
+    print(response);
   }
 
   bool _validateFields() {
-    bool hasErrors = false;
+    bool isValid = true;
     
     if (_email.isEmpty) {
-      hasErrors = true;
+      isValid = true;
       _emailShowError = true;
       _emailError = 'Debes ingresar tu email.';
     } else if (!EmailValidator.validate(_email)) {
-      hasErrors = true;
+      isValid = true;
       _emailShowError = true;
       _emailError = 'Debes ingresar un email válido.';
     } else {
@@ -168,11 +193,11 @@ class _LoginScreenState extends State<LoginScreen> {
     }
     
     if (_password.isEmpty) {
-      hasErrors = true;
+      isValid = true;
       _passwordShowError = true;
       _passwordError = 'Debes ingresar tu contraseña.';
     } else if (_password.length < 6) {
-      hasErrors = true;
+      isValid = true;
       _passwordShowError = true;
       _passwordError = 'Debes ingresar una contraseña de al menos de 6 caracteres.';
     } else {
@@ -180,6 +205,6 @@ class _LoginScreenState extends State<LoginScreen> {
     }
 
     setState(() { });
-    return hasErrors;
+    return isValid;
   }
 }
