@@ -7,6 +7,7 @@ import 'package:vehicles_app/components/loader_component.dart';
 import 'package:vehicles_app/helpers/constants.dart';
 import 'package:vehicles_app/models/procedure.dart';
 import 'package:vehicles_app/models/token.dart';
+import 'package:vehicles_app/screens/procedure_screen.dart';
 
 class ProceduresScreen extends StatefulWidget {
   final Token token;
@@ -38,7 +39,17 @@ class _ProceduresScreenState extends State<ProceduresScreen> {
       ),
       floatingActionButton: FloatingActionButton(
         child: Icon(Icons.add),
-        onPressed: () { }
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => ProcedureScreen(
+                token: widget.token,
+                procedure: Procedure(id: 0, description: '', price: 0)
+              )
+            )
+          );
+        }
       )
     );
   }
@@ -99,7 +110,17 @@ class _ProceduresScreenState extends State<ProceduresScreen> {
       children: _procedures.map((e) {
         return Card(
           child: InkWell(
-            onTap: () {},
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => ProcedureScreen(
+                    token: widget.token,
+                    procedure: e
+                  )
+                )
+              );
+            },
             child: Container(
               margin: EdgeInsets.all(10),
               padding: EdgeInsets.all(5),
@@ -111,7 +132,7 @@ class _ProceduresScreenState extends State<ProceduresScreen> {
                       Text(
                         e.description,
                         style: TextStyle(
-                          fontSize: 16
+                          fontSize: 20
                         )
                       ),
                       Icon(Icons.arrow_forward_ios)
