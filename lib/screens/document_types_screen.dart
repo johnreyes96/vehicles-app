@@ -3,22 +3,22 @@ import 'package:flutter/material.dart';
 
 import 'package:vehicles_app/components/loader_component.dart';
 import 'package:vehicles_app/helpers/api_helper.dart';
-import 'package:vehicles_app/models/brand.dart';
+import 'package:vehicles_app/models/document_type.dart';
 import 'package:vehicles_app/models/response.dart';
 import 'package:vehicles_app/models/token.dart';
-import 'package:vehicles_app/screens/brand_screen.dart';
+import 'package:vehicles_app/screens/document_type_screen.dart';
 
-class BrandsScreen extends StatefulWidget {
+class DocumentTypesScreen extends StatefulWidget {
   final Token token;
 
-  BrandsScreen({required this.token});
+  DocumentTypesScreen({required this.token});
 
   @override
-  _BrandsScreenState createState() => _BrandsScreenState();
+  _DocumentTypesScreenState createState() => _DocumentTypesScreenState();
 }
 
-class _BrandsScreenState extends State<BrandsScreen> {
-  List<Brand> _brands = [];
+class _DocumentTypesScreenState extends State<DocumentTypesScreen> {
+  List<DocumentType> _documentTypes = [];
   bool _showLoader = false;
   bool _isFiltered = false;
   String _search = '';
@@ -26,42 +26,42 @@ class _BrandsScreenState extends State<BrandsScreen> {
   @override
   void initState() {
     super.initState();
-    _getBrands();
+    _getDocumentTypes();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Marcas'),
+        title: Text('Tipos de documento'),
         actions: <Widget>[
           _isFiltered
           ? IconButton(
-              onPressed: _removeFilter,
+              onPressed: _removeFilter, 
               icon: Icon(Icons.filter_none)
             )
           : IconButton(
-              onPressed: _showFilter,
+              onPressed: _showFilter, 
               icon: Icon(Icons.filter_alt)
             )
-        ]
+        ],
       ),
       body: Center(
-        child: _showLoader ? LoaderComponent(text: 'Por favor espere...') : _getContent()
+        child: _showLoader ? LoaderComponent(text: 'Por favor espere...') : _getContent(),
       ),
       floatingActionButton: FloatingActionButton(
         child: Icon(Icons.add),
-        onPressed: () => _goAdd()
-      )
+        onPressed: () => _goAdd(),
+      ),
     );
   }
 
-  Future<Null> _getBrands() async {
+  Future<Null> _getDocumentTypes() async {
     setState(() {
       _showLoader = true;
     });
 
-    Response response = await ApiHelper.getBrands(widget.token.token);
+    Response response = await ApiHelper.getDocumentTypes(widget.token.token);
 
     setState(() {
       _showLoader = false;
@@ -70,22 +70,22 @@ class _BrandsScreenState extends State<BrandsScreen> {
     if (!response.isSuccess) {
       await showAlertDialog(
         context: context,
-        title: 'Error',
+        title: 'Error', 
         message: response.message,
         actions: <AlertDialogAction>[
-          AlertDialogAction(key: null, label: 'Aceptar')
+            AlertDialogAction(key: null, label: 'Aceptar'),
         ]
-      );
+      );    
       return;
     }
-    
+
     setState(() {
-      _brands = response.result;
+      _documentTypes = response.result;
     });
   }
 
   Widget _getContent() {
-    return _brands.length == 0
+    return _documentTypes.length == 0 
       ? _noContent()
       : _getListView();
   }
@@ -96,22 +96,22 @@ class _BrandsScreenState extends State<BrandsScreen> {
         margin: EdgeInsets.all(20),
         child: Text(
           _isFiltered
-          ? 'No hay marcas con ese criterio de búsqueda'
-          : 'No hay marcas registradas.',
+          ? 'No hay tipos de documento con ese criterio de búsqueda.'
+          : 'No hay tipos de documento registrados.',
           style: TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.bold
-          )
-        )
-      )
+          ),
+        ),
+      ),
     );
   }
 
   Widget _getListView() {
     return RefreshIndicator(
-      onRefresh: _getBrands,
+      onRefresh: _getDocumentTypes,
       child: ListView(
-        children: _brands.map((e) {
+        children: _documentTypes.map((e) {
           return Card(
             child: InkWell(
               onTap: () => _goEdit(e),
@@ -124,72 +124,70 @@ class _BrandsScreenState extends State<BrandsScreen> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
-                          e.description,
+                          e.description, 
                           style: TextStyle(
-                            fontSize: 20
-                          )
+                            fontSize: 20,
+                          ),
                         ),
-                        Icon(Icons.arrow_forward_ios)
-                      ]
-                    )
-                  ]
-                )
-              )
+                        Icon(Icons.arrow_forward_ios),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
             ),
           );
-        }).toList()
+        }).toList(),
       ),
     );
   }
 
   void _showFilter() {
     showDialog(
-      context: context,
+      context: context, 
       builder: (context) {
         return AlertDialog(
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10)
+            borderRadius: BorderRadius.circular(10),
           ),
-          title: Text('Filtrar Marcas'),
+          title: Text('Filtrar Tipos de Documento'),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: <Widget>[
-              Text('Escriba las primeras letras de la marca'),
-              SizedBox(height: 10),
+              Text('Escriba las primeras letras del tipo de documento'),
+              SizedBox(height: 10,),
               TextField(
                 autofocus: true,
                 decoration: InputDecoration(
-                  hintText: 'Criterio de búsqueda',
+                  hintText: 'Criterio de búsqueda...',
                   labelText: 'Buscar',
                   suffixIcon: Icon(Icons.search)
                 ),
                 onChanged: (value) {
                   _search = value;
-                }
+                },
               )
-            ]
+            ],
           ),
           actions: <Widget>[
             TextButton(
-              onPressed: () => Navigator.of(context).pop(),
+              onPressed: () => Navigator.of(context).pop(), 
               child: Text('Cancelar')
             ),
             TextButton(
-              onPressed: () => _filter(),
+              onPressed: () => _filter(), 
               child: Text('Filtrar')
-            )
+            ),
           ],
         );
-      }
-    );
+      });
   }
 
   void _removeFilter() {
     setState(() {
       _isFiltered = false;
     });
-
-    _getBrands();
+    _getDocumentTypes();
   }
 
   void _filter() {
@@ -197,15 +195,15 @@ class _BrandsScreenState extends State<BrandsScreen> {
       return;
     }
 
-    List<Brand> filteredList = [];
-    for (var brand in _brands) {
-      if (brand.description.toLowerCase().contains(_search.toLowerCase())) {
-        filteredList.add(brand);
+    List<DocumentType> filteredList = [];
+    for (var documentType in _documentTypes) {
+      if (documentType.description.toLowerCase().contains(_search.toLowerCase())) {
+        filteredList.add(documentType);
       }
     }
 
     setState(() {
-      _brands = filteredList;
+      _documentTypes = filteredList;
       _isFiltered = true;
     });
 
@@ -214,33 +212,31 @@ class _BrandsScreenState extends State<BrandsScreen> {
 
   void _goAdd() async {
     String? result = await Navigator.push(
-      context,
+      context, 
       MaterialPageRoute(
-        builder: (context) => BrandScreen(
-          token: widget.token,
-          brand: Brand(id: 0, description: '')
+        builder: (context) => DocumentTypeScreen(
+          token: widget.token, 
+          documentType: DocumentType(description: '', id: 0),
         )
       )
     );
-
     if (result == 'yes') {
-      _getBrands();
+      _getDocumentTypes();
     }
   }
 
-  void _goEdit(Brand brand) async {
+  void _goEdit(DocumentType documentType) async {
     String? result = await Navigator.push(
-      context,
+      context, 
       MaterialPageRoute(
-        builder: (context) => BrandScreen(
-          token: widget.token,
-          brand: brand
+        builder: (context) => DocumentTypeScreen(
+          token: widget.token, 
+          documentType: documentType,
         )
       )
     );
-
     if (result == 'yes') {
-      _getBrands();
+      _getDocumentTypes();
     }
   }
-}
+} 

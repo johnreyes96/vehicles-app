@@ -1,6 +1,7 @@
 import 'package:vehicles_app/models/brand.dart';
 import 'package:vehicles_app/models/history.dart';
 import 'package:vehicles_app/models/vehicle_photo.dart';
+import 'package:vehicles_app/models/vehicle_type.dart';
 
 class Vehicle {
   int id = 0;
