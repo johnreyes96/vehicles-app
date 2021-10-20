@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 import 'package:adaptive_dialog/adaptive_dialog.dart';
 import 'package:camera/camera.dart';
@@ -265,16 +266,22 @@ class _UserScreenState extends State<UserScreen> {
       _showLoader = true;
     });
 
+    String base64image = '';
+    if (_photoChanged) {
+      List<int> imageBytes = await _image.readAsBytes();
+      base64image = base64Encode(imageBytes);
+    }
+
     Map<String, dynamic> request = {
       'firstName': _firstName,
       'lastName': _lastName,
-      'documentType': 1,
-      'documentType': _documentTypeId,
+      'documentTypeId': _documentTypeId,
       'document': _document,
       'email': _email,
       'userName': _email,
       'address': _address,
-      'phoneNumber': _phoneNumber
+      'phoneNumber': _phoneNumber,
+      'image': base64image
     };
 
     Response response = await ApiHelper.post(
@@ -307,17 +314,23 @@ class _UserScreenState extends State<UserScreen> {
       _showLoader = true;
     });
 
+    String base64image = '';
+    if (_photoChanged) {
+      List<int> imageBytes = await _image.readAsBytes();
+      base64image = base64Encode(imageBytes);
+    }
+
     Map<String, dynamic> request = {
       'id': widget.user.id,
       'firstName': _firstName,
       'lastName': _lastName,
-      'documentType': 1,
-      'documentType': _documentTypeId,
+      'documentTypeId': _documentTypeId,
       'document': _document,
       'email': _email,
       'userName': _email,
       'address': _address,
       'phoneNumber': _phoneNumber,
+      'image': base64image
     };
 
     Response response = await ApiHelper.put(
@@ -401,7 +414,7 @@ class _UserScreenState extends State<UserScreen> {
             margin: EdgeInsets.only(top: 10),
             child: widget.user.id.isEmpty && !_photoChanged
               ? Image(
-                  image: AssetImage('assets/noimage.png'),
+                  image: AssetImage('assets/no-image.png'),
                   height: 160,
                   width: 160,
                   fit: BoxFit.cover,
@@ -517,6 +530,7 @@ class _UserScreenState extends State<UserScreen> {
     return Container(
       padding: EdgeInsets.all(10),
       child: TextField(
+        enabled: widget.user.id.isEmpty,
         controller: _emailController,
         keyboardType: TextInputType.emailAddress,
         decoration: InputDecoration(

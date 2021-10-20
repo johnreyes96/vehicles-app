@@ -131,33 +131,9 @@ class _LoginScreenState extends State<LoginScreen> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: <Widget>[
-          Expanded(
-            child: ElevatedButton(
-              child: Text('Iniciar Sesión'),
-              style: ButtonStyle(
-                backgroundColor: MaterialStateProperty.resolveWith<Color>(
-                  (Set<MaterialState> states) {
-                    return Color(0xFF120E43);
-                  }
-                )
-              ),
-              onPressed: () => _login()
-            ),
-          ),
-          SizedBox(width: 20,),
-          Expanded(
-            child: ElevatedButton(
-              child: Text('Nuevo Usuario'),
-              style: ButtonStyle(
-                backgroundColor: MaterialStateProperty.resolveWith<Color>(
-                  (Set<MaterialState> states) {
-                    return Color(0xFFE03B8B);
-                  }
-                )
-              ),
-              onPressed: () {}
-            )
-          )
+          _showLoginButton(),
+          SizedBox(width: 20),
+          _showRegisterButton()
         ],
       ),
     );
@@ -242,5 +218,37 @@ class _LoginScreenState extends State<LoginScreen> {
 
     setState(() { });
     return isValid;
+  }
+
+  Widget _showLoginButton() {
+    return Expanded(
+      child: ElevatedButton(
+        child: Text('Iniciar Sesión'),
+        style: ButtonStyle(
+          backgroundColor: MaterialStateProperty.resolveWith<Color>(
+            (Set<MaterialState> states) {
+              return Color(0xFF120E43);
+            }
+          )
+        ),
+        onPressed: () => _login()
+      ),
+    );
+  }
+
+  Widget _showRegisterButton() {
+    return Expanded(
+      child: ElevatedButton(
+        child: Text('Nuevo Usuario'),
+        style: ButtonStyle(
+          backgroundColor: MaterialStateProperty.resolveWith<Color>(
+            (Set<MaterialState> states) {
+              return Color(0xFFE03B8B);
+            }
+          ),
+        ),
+        onPressed: () {}, 
+      ),
+    );
   }
 }
