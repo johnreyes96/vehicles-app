@@ -81,7 +81,7 @@ class _UsersScreenState extends State<UsersScreen> {
       return;
     }
 
-    Response response = await ApiHelper.getUsers(widget.token.token);
+    Response response = await ApiHelper.getUsers(widget.token);
 
     setState(() {
       _showLoader = false;

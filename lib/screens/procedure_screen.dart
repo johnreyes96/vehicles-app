@@ -220,7 +220,7 @@ class _ProcedureScreenState extends State<ProcedureScreen> {
     Response response = await ApiHelper.post(
       '/api/Procedures/',
       request,
-      widget.token.token
+      widget.token
     );
 
     setState(() {
@@ -274,7 +274,7 @@ class _ProcedureScreenState extends State<ProcedureScreen> {
       '/api/Procedures/',
       widget.procedure.id.toString(),
       request,
-      widget.token.token
+      widget.token
     );
 
     setState(() {
@@ -337,7 +337,7 @@ class _ProcedureScreenState extends State<ProcedureScreen> {
     Response response = await ApiHelper.delete(
       '/api/Procedures/',
       widget.procedure.id.toString(),
-      widget.token.token
+      widget.token
     );
 
     setState(() {
