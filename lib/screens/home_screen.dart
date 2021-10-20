@@ -41,7 +41,7 @@ class _HomeScreenState extends State<HomeScreen> {
           ClipRRect(
             borderRadius: BorderRadius.circular(150),
             child: FadeInImage(
-              placeholder: AssetImage('assets/vehicles-logo.png'),
+              placeholder: AssetImage('assets/vehicles_logo.png'),
               image: NetworkImage(widget.token.user.imageFullPath),
               height: 300,
               width: 300,
@@ -70,7 +70,7 @@ class _HomeScreenState extends State<HomeScreen> {
         children: <Widget>[
           DrawerHeader(
             child: Image(
-              image: AssetImage('assets/vehicles-logo.png'),
+              image: AssetImage('assets/vehicles_logo.png'),
             )
           ),
           ListTile(
@@ -159,7 +159,7 @@ class _HomeScreenState extends State<HomeScreen> {
         children: <Widget>[
           DrawerHeader(
             child: Image(
-              image: AssetImage('assets/vehicles-logo.png')
+              image: AssetImage('assets/vehicles_logo.png')
             )
           ),
           ListTile(
