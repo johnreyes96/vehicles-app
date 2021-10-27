@@ -465,7 +465,7 @@ class _UserScreenState extends State<UserScreen> {
           margin: EdgeInsets.only(top: 10),
           child: widget.user.id.isEmpty && !_photoChanged
             ? Image(
-                image: AssetImage('assets/no-image.png'),
+                image: AssetImage('assets/no_image.png'),
                 height: 160,
                 width: 160,
                 fit: BoxFit.cover,
