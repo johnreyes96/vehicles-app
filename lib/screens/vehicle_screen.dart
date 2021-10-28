@@ -113,7 +113,7 @@ class _VehicleScreenState extends State<VehicleScreen> {
   Widget _showPhoto() {
     return widget.vehicle.id == 0
     ? _showUniquePhoto()
-    : _showPhotosCarousel()
+    : _showPhotosCarousel();
   }
 
   Widget _showUniquePhoto() {
