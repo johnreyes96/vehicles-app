@@ -133,7 +133,7 @@ class _BrandScreenState extends State<BrandScreen> {
     bool isValid = true;
     
     if (_description.isEmpty) {
-      isValid = true;
+      isValid = false;
       _descriptionShowError = true;
       _descriptionError = 'Debes ingresar una descripción.';
     } else {

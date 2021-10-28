@@ -46,6 +46,26 @@ class _VehicleScreenState extends State<VehicleScreen> {
   bool _lineShowError = false;
   TextEditingController _lineController = TextEditingController();
 
+  String _color = '';
+  String _colorError = '';
+  bool _colorShowError = false;
+  TextEditingController _colorController = TextEditingController();
+
+  String _model = '';
+  String _modelError = '';
+  bool _modelShowError = false;
+  TextEditingController _modelController = TextEditingController();
+
+  String _plaque = '';
+  String _plaqueError = '';
+  bool _plaqueShowError = false;
+  TextEditingController _plaqueController = TextEditingController();
+
+  String _remarks = '';
+  String _remarksError = '';
+  bool _remarksShowError = false;
+  TextEditingController _remarksController = TextEditingController();
+
   @override
   void initState() {
     super.initState();
@@ -210,12 +230,6 @@ class _VehicleScreenState extends State<VehicleScreen> {
     );
   }
 
-  Widget _showModel() {
-    return Container();
-  }
-
-  Widget _showPlaque() { return Container(); }
-
   Widget _showLine() {
     return Container(
       padding: EdgeInsets.all(10),
@@ -237,11 +251,134 @@ class _VehicleScreenState extends State<VehicleScreen> {
     );
   }
 
-  Widget _showColor() { return Container(); }
+  Widget _showColor() {
+    return Container(
+      padding: EdgeInsets.all(10),
+      child: TextField(
+        controller: _colorController,
+        decoration: InputDecoration(
+          hintText: 'Ingresa Color...',
+          labelText: 'Color',
+          errorText: _colorShowError ? _colorError : null,
+          suffixIcon: Icon(Icons.palette),
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(10)
+          ),
+        ),
+        onChanged: (value) {
+          _color = value;
+        },
+      ),
+    );
+  }
 
-  Widget _showRemarks() { return Container(); }
+  Widget _showModel() {
+    return Container(
+      padding: EdgeInsets.all(10),
+      child: TextField(
+        keyboardType: TextInputType.number,
+        controller: _modelController,
+        decoration: InputDecoration(
+          hintText: 'Ingresa Modelo...',
+          labelText: 'Modelo',
+          errorText: _modelShowError ? _modelError : null,
+          suffixIcon: Icon(Icons.event),
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(10)
+          ),
+        ),
+        onChanged: (value) {
+          _model = value;
+        },
+      ),
+    );
+  }
 
-  Widget _showButtons() { return Container(); }
+  Widget _showPlaque() {
+    return Container(
+      padding: EdgeInsets.all(10),
+      child: TextField(
+        keyboardType: TextInputType.number,
+        controller: _plaqueController,
+        decoration: InputDecoration(
+          hintText: 'Ingresa Placa...',
+          labelText: 'Placa',
+          errorText: _plaqueShowError ? _plaqueError : null,
+          suffixIcon: Icon(Icons.directions_car),
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(10)
+          ),
+        ),
+        onChanged: (value) {
+          _plaque = value;
+        },
+      ),
+    );
+  }
+
+  Widget _showRemarks() {
+    return Container(
+      padding: EdgeInsets.all(10),
+      child: TextField(
+        keyboardType: TextInputType.number,
+        controller: _remarksController,
+        decoration: InputDecoration(
+          hintText: 'Ingresa Comentarios...',
+          labelText: 'Comentarios',
+          errorText: _remarksShowError ? _remarksError : null,
+          suffixIcon: Icon(Icons.notes),
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(10)
+          ),
+        ),
+        onChanged: (value) {
+          _remarks = value;
+        },
+      ),
+    );
+  }
+
+  Widget _showButtons() {
+    return Container(
+      margin: EdgeInsets.only(left: 10, right: 10),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        children: <Widget>[
+          Expanded(
+            child: ElevatedButton(
+              child: Text('Guardar'),
+              style: ButtonStyle(
+                backgroundColor: MaterialStateProperty.resolveWith<Color>(
+                  (Set<MaterialState> states) {
+                    return Color(0xFF120E43);
+                  }
+                )
+              ),
+              onPressed: () => _save()
+            ),
+          ),
+          widget.vehicle.id == 0
+            ? Container()
+            : SizedBox(width: 20,),
+          widget.vehicle.id == 0
+            ? Container()
+            : Expanded(
+              child: ElevatedButton(
+                child: Text('Borrar'),
+                style: ButtonStyle(
+                  backgroundColor: MaterialStateProperty.resolveWith<Color>(
+                    (Set<MaterialState> states) {
+                      return Color(0xFFB4161B);
+                    }
+                  )
+                ),
+                onPressed: () => _confirmDelete()
+              )
+            )
+        ],
+      ),
+    );
+  }
 
   void _takePicture() async {
     WidgetsFlutterBinding.ensureInitialized();
@@ -397,4 +534,81 @@ class _VehicleScreenState extends State<VehicleScreen> {
 
     return list;
   }
+
+  void _save() {
+    if (!_validateFields()) {
+      return;
+    }
+
+    widget.vehicle.id == 0 ? _addRecord() : _saveRecord();
+  }
+
+  void _confirmDelete() {}
+
+  bool _validateFields() {
+    bool isValid = true;
+    
+    if (_vehicleTypeId == 0) {
+      isValid = false;
+      _vehicleTypeIdShowError = true;
+      _vehicleTypeIdError = 'Debes seleccionar un tipo de vehículo.';
+    } else {
+      _vehicleTypeIdShowError = false;
+    }
+    
+    if (_brandId == 0) {
+      isValid = false;
+      _brandIdShowError = true;
+      _brandIdError = 'Debes seleccionar una marca.';
+    } else {
+      _brandIdShowError = false;
+    }
+
+    if (_line.isEmpty) {
+      isValid = false;
+      _lineShowError = true;
+      _lineError = 'Debes ingresar una línea.';
+    } else {
+      _lineShowError = false;
+    }
+
+    if (_color.isEmpty) {
+      isValid = false;
+      _colorShowError = true;
+      _colorError = 'Debes ingresar un color.';
+    } else {
+      _colorShowError = false;
+    }
+
+    if (_model.isEmpty) {
+      isValid = false;
+      _modelShowError = true;
+      _modelError = 'Debes ingresar un modelo.';
+    } else {
+      int model = int.parse(_model);
+      if (model < 1900 || model > 3000) {
+        isValid = false;
+        _modelShowError = true;
+        _modelError = 'El modelo debe ser un número entre 1900 y 3000.';
+      } else {
+        _modelShowError = false;
+      }
+    }
+    
+
+    if (!RegExp('[a-zA-Z]{3}[0-9]{2}[a-zA-Z0-9]').hasMatch(_plaque)) {
+      isValid = false;
+      _plaqueShowError = true;
+      _plaqueError = 'El formato de la placa es incorrecto.';
+    } else {
+      _plaqueShowError = false;
+    }
+    
+    setState(() { });
+    return isValid;
+  }
+
+  void _addRecord() {}
+
+  void _saveRecord() {}
 }
