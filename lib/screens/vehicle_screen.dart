@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:adaptive_dialog/adaptive_dialog.dart';
@@ -71,6 +72,7 @@ class _VehicleScreenState extends State<VehicleScreen> {
     super.initState();
     _getVehiclesTypes();
     _getBrands();
+    _loadFieldValues();
   }
 
   @override
@@ -543,7 +545,68 @@ class _VehicleScreenState extends State<VehicleScreen> {
     widget.vehicle.id == 0 ? _addRecord() : _saveRecord();
   }
 
-  void _confirmDelete() {}
+  void _confirmDelete() async{
+    var response = await showAlertDialog(
+      context: context,
+      title: 'Confirmación',
+      message: '¿Estás seguro de querer borar el registro?',
+      actions: <AlertDialogAction>[
+        AlertDialogAction(key: 'no', label: 'No'),
+        AlertDialogAction(key: 'yes', label: 'Si')
+      ]
+    );
+
+    if (response == 'yes') {
+      _deleteRecord();
+    }
+  }
+
+  void _deleteRecord() async {
+    setState(() {
+      _showLoader = true;
+    });
+
+    var connectivityResult = await Connectivity().checkConnectivity();
+    if (connectivityResult == ConnectivityResult.none) {
+      setState(() {
+        _showLoader = false;
+      });
+
+      await showAlertDialog(
+        context: context,
+        title: 'Error',
+        message: 'Verifica que estés conectado a internet.',
+        actions: <AlertDialogAction>[
+          AlertDialogAction(key: null, label: 'Aceptar')
+        ]
+      );
+      return;
+    }
+
+    Response response = await ApiHelper.delete(
+      '/api/Vehicles/',
+      widget.vehicle.id.toString(),
+      widget.token
+    );
+
+    setState(() {
+      _showLoader = false;
+    });
+
+    if (!response.isSuccess) {
+      await showAlertDialog(
+        context: context,
+        title: 'Error',
+        message: response.message,
+        actions: <AlertDialogAction>[
+          AlertDialogAction(key: null, label: 'Aceptar')
+        ]
+      );
+      return;
+    }
+
+    Navigator.pop(context, 'yes');
+  }
 
   bool _validateFields() {
     bool isValid = true;
@@ -594,7 +657,6 @@ class _VehicleScreenState extends State<VehicleScreen> {
         _modelShowError = false;
       }
     }
-    
 
     if (!RegExp('[a-zA-Z]{3}[0-9]{2}[a-zA-Z0-9]').hasMatch(_plaque)) {
       isValid = false;
@@ -608,7 +670,154 @@ class _VehicleScreenState extends State<VehicleScreen> {
     return isValid;
   }
 
-  void _addRecord() {}
+  void _addRecord() async {
+    setState(() {
+      _showLoader = true;
+    });
 
-  void _saveRecord() {}
+    var connectivityResult = await Connectivity().checkConnectivity();
+    if (connectivityResult == ConnectivityResult.none) {
+      setState(() {
+        _showLoader = false;
+      });
+
+      await showAlertDialog(
+        context: context,
+        title: 'Error',
+        message: 'Verifica que estés conectado a internet.',
+        actions: <AlertDialogAction>[
+          AlertDialogAction(key: null, label: 'Aceptar')
+        ]
+      );
+      return;
+    }
+
+    String base64Image = '';
+    if (_photoChanged) {
+      List<int> imageBytes = await _image.readAsBytes();
+      base64Image = base64Encode(imageBytes);
+    }
+
+    Map<String, dynamic> request = {
+      'vehicleTypeId': _vehicleTypeId,
+      'brandId': _brandId,
+      'model': _model,
+      'plaque': _plaque.toUpperCase(),
+      'line': _line,
+      'color': _color,
+      'userId': widget.user.id,
+      'remarks': _remarks,
+      'image': base64Image,
+    };
+
+    Response response = await ApiHelper.post(
+      '/api/Vehicles/',
+      request,
+      widget.token
+    );
+
+    setState(() {
+      _showLoader = false;
+    });
+
+    if (!response.isSuccess) {
+      await showAlertDialog(
+        context: context,
+        title: 'Error',
+        message: response.message,
+        actions: <AlertDialogAction>[
+          AlertDialogAction(key: null, label: 'Aceptar')
+        ]
+      );
+      return;
+    }
+
+    Navigator.pop(context, 'yes');
+  }
+
+  void _saveRecord() async {
+    setState(() {
+      _showLoader = true;
+    });
+
+    var connectivityResult = await Connectivity().checkConnectivity();
+    if (connectivityResult == ConnectivityResult.none) {
+      setState(() {
+        _showLoader = false;
+      });
+
+      await showAlertDialog(
+        context: context,
+        title: 'Error',
+        message: 'Verifica que estés conectado a internet.',
+        actions: <AlertDialogAction>[
+          AlertDialogAction(key: null, label: 'Aceptar')
+        ]
+      );
+      return;
+    }
+
+    String base64Image = '';
+    if (_photoChanged) {
+      List<int> imageBytes = await _image.readAsBytes();
+      base64Image = base64Encode(imageBytes);
+    }
+
+    Map<String, dynamic> request = {
+      'id': widget.vehicle.id,
+      'vehicleTypeId': _vehicleTypeId,
+      'brandId': _brandId,
+      'model': _model,
+      'plaque': _plaque.toUpperCase(),
+      'line': _line,
+      'color': _color,
+      'userId': widget.user.id,
+      'remarks': _remarks
+    };
+
+    Response response = await ApiHelper.put(
+      '/api/Vehicles/',
+      widget.vehicle.id.toString(),
+      request,
+      widget.token
+    );
+
+    setState(() {
+      _showLoader = false;
+    });
+
+    if (!response.isSuccess) {
+      await showAlertDialog(
+        context: context,
+        title: 'Error',
+        message: response.message,
+        actions: <AlertDialogAction>[
+          AlertDialogAction(key: null, label: 'Aceptar')
+        ]
+      );
+      return;
+    }
+
+    Navigator.pop(context, 'yes');
+  }
+
+  void _loadFieldValues() {
+    _vehicleTypeId = widget.vehicle.vehicleType.id;
+    _brandId = widget.vehicle.brand.id;
+
+    _model = widget.vehicle.model.toString();
+    _modelController.text = _model;
+    
+    _plaque = widget.vehicle.plaque;
+    _plaqueController.text = _plaque;
+    
+    _line = widget.vehicle.line;
+    _lineController.text = _line;
+    
+    _color = widget.vehicle.color;
+    _colorController.text = _color;
+    
+    _remarks = widget.vehicle.remarks == null ? '' : widget.vehicle.remarks!;
+    _remarksController.text = _remarks;
+  }
 }
