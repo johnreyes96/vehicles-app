@@ -2,6 +2,7 @@ import 'package:adaptive_dialog/adaptive_dialog.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:vehicles_app/components/loader_component.dart';
 import 'package:vehicles_app/helpers/api_helper.dart';
 import 'package:vehicles_app/models/history.dart';
@@ -25,12 +26,19 @@ class VehicleInfoScreen extends StatefulWidget {
 
 class _VehicleInfoScreenState extends State<VehicleInfoScreen> {
   bool _showLoader = false;
+  late Vehicle _vehicle;
+
+  @override
+  void initState() {
+    super.initState();
+    _vehicle = widget.vehicle;
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('${widget.vehicle.brand.description} ${widget.vehicle.line} ${widget.vehicle.plaque}'),
+        title: Text('${_vehicle.brand.description} ${_vehicle.line} ${_vehicle.plaque}'),
       ),
       body: Center(
         child: _showLoader
@@ -62,11 +70,11 @@ class _VehicleInfoScreenState extends State<VehicleInfoScreen> {
         builder: (context) => HistoryScreen(
         token: widget.token,
         user: widget.user,
-        vehicle: widget.vehicle
+        vehicle: _vehicle
       ))
     );
     if (result == 'yes') {
-      //TODO: pending refresh the page
+      await _getVehicle();
     }
   }
 
@@ -75,7 +83,7 @@ class _VehicleInfoScreenState extends State<VehicleInfoScreen> {
       children: <Widget>[
         _showVehicleInfo(),
         Expanded(
-          child: widget.vehicle.histories.length == 0 ? _noContent() : _getListView()
+          child: _vehicle.histories.length == 0 ? _noContent() : _getListView()
         )
       ],
     );
@@ -92,7 +100,7 @@ class _VehicleInfoScreenState extends State<VehicleInfoScreen> {
               ClipRRect(
                 borderRadius: BorderRadius.circular(5),
                 child: CachedNetworkImage(
-                  imageUrl: widget.vehicle.imageFullPath,
+                  imageUrl: _vehicle.imageFullPath,
                   errorWidget: (context, url, err) => Icon(Icons.error),
                   fit: BoxFit.cover,
                   height: 100,
@@ -146,7 +154,7 @@ class _VehicleInfoScreenState extends State<VehicleInfoScreen> {
                               )
                             ),
                             Text(
-                              widget.vehicle.vehicleType.description, 
+                              _vehicle.vehicleType.description, 
                               style: TextStyle(
                                 fontSize: 14,
                               ),
@@ -163,7 +171,7 @@ class _VehicleInfoScreenState extends State<VehicleInfoScreen> {
                               )
                             ),
                             Text(
-                              widget.vehicle.brand.description,
+                              _vehicle.brand.description,
                               style: TextStyle(
                                 fontSize: 14,
                               ),
@@ -180,7 +188,7 @@ class _VehicleInfoScreenState extends State<VehicleInfoScreen> {
                               )
                             ),
                             Text(
-                              widget.vehicle.model.toString(),
+                              _vehicle.model.toString(),
                               style: TextStyle(
                                 fontSize: 14,
                               ),
@@ -197,7 +205,7 @@ class _VehicleInfoScreenState extends State<VehicleInfoScreen> {
                               )
                             ),
                             Text(
-                              widget.vehicle.plaque,
+                              _vehicle.plaque,
                               style: TextStyle(
                                 fontSize: 14,
                               ),
@@ -214,7 +222,7 @@ class _VehicleInfoScreenState extends State<VehicleInfoScreen> {
                               )
                             ),
                             Text(
-                              widget.vehicle.line,
+                              _vehicle.line,
                               style: TextStyle(
                                 fontSize: 14
                               )
@@ -231,7 +239,7 @@ class _VehicleInfoScreenState extends State<VehicleInfoScreen> {
                               )
                             ),
                             Text(
-                              widget.vehicle.color,
+                              _vehicle.color,
                               style: TextStyle(
                                 fontSize: 14
                               )
@@ -248,7 +256,7 @@ class _VehicleInfoScreenState extends State<VehicleInfoScreen> {
                               )
                             ),
                             Text(
-                              widget.vehicle.remarks == null ? 'N/A' : widget.vehicle.remarks!,
+                              _vehicle.remarks == null ? 'N/A' : _vehicle.remarks!,
                               style: TextStyle(
                                 fontSize: 14
                               )
@@ -265,7 +273,7 @@ class _VehicleInfoScreenState extends State<VehicleInfoScreen> {
                               )
                             ),
                             Text(
-                              widget.vehicle.historiesCount.toString(),
+                              _vehicle.historiesCount.toString(),
                               style: TextStyle(
                                 fontSize: 14
                               )
@@ -303,7 +311,7 @@ class _VehicleInfoScreenState extends State<VehicleInfoScreen> {
     return RefreshIndicator(
       onRefresh: _getVehicle,
       child: ListView(
-        children: widget.vehicle.histories.map((e) {
+        children: _vehicle.histories.map((e) {
           return Card(
             child: InkWell(
               onTap: () => _goHistory(e),
@@ -321,16 +329,16 @@ class _VehicleInfoScreenState extends State<VehicleInfoScreen> {
                             Column(
                               children: <Widget>[
                                 Text(
-                                  e.date,
+                                  '${DateFormat('yyyy-MM-dd').format(DateTime.parse(e.dateLocal))}',
                                   style: TextStyle(
-                                    fontSize: 20,
+                                    fontSize: 14,
                                     fontWeight: FontWeight.bold
                                   ),
                                 ),
                                 Row(
                                   children: <Widget>[
                                     Text(
-                                      e.mileage.toString(),
+                                      '${e.mileage} Kms',
                                       style: TextStyle(
                                         fontSize: 14,
                                       ),
@@ -347,20 +355,33 @@ class _VehicleInfoScreenState extends State<VehicleInfoScreen> {
                                 Row(
                                   children: <Widget>[
                                     Text(
-                                      e.totalLabor.toString(),
+                                      'Mano de obra: ${NumberFormat.currency(symbol: '\$').format(e.totalLabor)}',
                                       style: TextStyle(
                                         fontSize: 14,
                                       ),
                                     ),
-                                    SizedBox(width: 5),
+                                  ]
+                                ),
+                                 Row(
+                                  children: <Widget>[
                                     Text(
-                                      e.totalSpareParts.toString(),
+                                      'Repuestos: ${NumberFormat.currency(symbol: '\$').format(e.totalSpareParts)}',
                                       style: TextStyle(
                                         fontSize: 14,
-                                      )
-                                    )
+                                      ),
+                                    ),
                                   ]
-                                )
+                                ),
+                                 Row(
+                                  children: <Widget>[
+                                    Text(
+                                      'Total: ${NumberFormat.currency(symbol: '\$').format(e.total)}',
+                                      style: TextStyle(
+                                        fontSize: 14,
+                                      ),
+                                    ),
+                                  ]
+                                ),
                               ]
                             )
                           ]
@@ -388,12 +409,12 @@ class _VehicleInfoScreenState extends State<VehicleInfoScreen> {
         builder: (context) => VehicleScreen(
           token: widget.token, 
           user: widget.user,
-          vehicle: widget.vehicle,
+          vehicle: _vehicle,
         )
       )
     );
     if (result == 'yes') {
-      //TODO: Pending refresh vehicle  info
+      await _getVehicle();
     }
   }
 
@@ -419,8 +440,7 @@ class _VehicleInfoScreenState extends State<VehicleInfoScreen> {
       return;
     }
 
-    //TODO: pending to get the vehicle
-    Response response = await ApiHelper.getUser(widget.token, widget.user.id);
+    Response response = await ApiHelper.getVehicle(widget.token, _vehicle.id.toString());
 
     setState(() {
       _showLoader = false;
@@ -438,8 +458,8 @@ class _VehicleInfoScreenState extends State<VehicleInfoScreen> {
       return;
     }
 
-    // setState(() {
-    //   _user = response.result;
-    // });
+    setState(() {
+      _vehicle = response.result;
+    });
   }
 }
