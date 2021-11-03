@@ -190,7 +190,7 @@ class _ProcedureScreenState extends State<ProcedureScreen> {
     return isValid;
   }
 
-  _addRecord() async {
+  void _addRecord() async {
     setState(() {
       _showLoader = true;
     });

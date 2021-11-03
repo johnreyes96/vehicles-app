@@ -70,7 +70,8 @@ class _VehicleInfoScreenState extends State<VehicleInfoScreen> {
         builder: (context) => HistoryScreen(
         token: widget.token,
         user: widget.user,
-        vehicle: _vehicle
+        vehicle: _vehicle,
+        history: history,
       ))
     );
     if (result == 'yes') {
