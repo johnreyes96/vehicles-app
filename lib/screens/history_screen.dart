@@ -166,7 +166,68 @@ class _HistoryScreenState extends State<HistoryScreen> {
     widget.history.id == 0 ? _addRecord() : _saveRecord();
   }
 
-  void _confirmDelete() {}
+  void _confirmDelete() async {
+    var response = await showAlertDialog(
+      context: context,
+      title: 'Confirmación',
+      message: '¿Estás seguro de querer borar el registro?',
+      actions: <AlertDialogAction>[
+        AlertDialogAction(key: 'no', label: 'No'),
+        AlertDialogAction(key: 'yes', label: 'Si')
+      ]
+    );
+
+    if (response == 'yes') {
+      _deleteRecord();
+    }
+  }
+
+  void _deleteRecord() async {
+    setState(() {
+      _showLoader = true;
+    });
+
+    var connectivityResult = await Connectivity().checkConnectivity();
+    if (connectivityResult == ConnectivityResult.none) {
+      setState(() {
+        _showLoader = false;
+      });
+
+      await showAlertDialog(
+        context: context,
+        title: 'Error',
+        message: 'Verifica que estés conectado a internet.',
+        actions: <AlertDialogAction>[
+          AlertDialogAction(key: null, label: 'Aceptar')
+        ]
+      );
+      return;
+    }
+
+    Response response = await ApiHelper.delete(
+      '/api/Histories/',
+      widget.history.id.toString(),
+      widget.token
+    );
+
+    setState(() {
+      _showLoader = false;
+    });
+
+    if (!response.isSuccess) {
+      await showAlertDialog(
+        context: context,
+        title: 'Error',
+        message: response.message,
+        actions: <AlertDialogAction>[
+          AlertDialogAction(key: null, label: 'Aceptar')
+        ]
+      );
+      return;
+    }
+
+    Navigator.pop(context, 'yes');
+  }
 
   bool _validateFields() {
     bool isValid = true;
@@ -251,4 +312,58 @@ class _HistoryScreenState extends State<HistoryScreen> {
     Navigator.pop(context, 'yes');
   }
 
-  void _saveRecord() {}
+  void _saveRecord() async {
+    setState(() {
+      _showLoader = true;
+    });
+
+    var connectivityResult = await Connectivity().checkConnectivity();
+    if (connectivityResult == ConnectivityResult.none) {
+      setState(() {
+        _showLoader = false;
+      });
+
+      await showAlertDialog(
+        context: context,
+        title: 'Error',
+        message: 'Verifica que estés conectado a internet.',
+        actions: <AlertDialogAction>[
+          AlertDialogAction(key: null, label: 'Aceptar')
+        ]
+      );
+      return;
+    }
+
+    Map<String, dynamic> request = {
+      'id': widget.history.id,
+      'vehicleId': widget.vehicle.id,
+      'mileage': int.parse(_mileage),
+      'remarks': _remarks
+    };
+
+    Response response = await ApiHelper.put(
+      '/api/Histories/',
+      widget.history.id.toString(),
+      request,
+      widget.token
+    );
+
+    setState(() {
+      _showLoader = false;
+    });
+
+    if (!response.isSuccess) {
+      await showAlertDialog(
+        context: context,
+        title: 'Error',
+        message: response.message,
+        actions: <AlertDialogAction>[
+          AlertDialogAction(key: null, label: 'Aceptar')
+        ]
+      );
+      return;
+    }
+
+    Navigator.pop(context, 'yes');
+  }
+}

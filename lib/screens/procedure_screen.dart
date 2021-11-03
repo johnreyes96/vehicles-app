@@ -242,7 +242,7 @@ class _ProcedureScreenState extends State<ProcedureScreen> {
     Navigator.pop(context, 'yes');
   }
 
-  _saveRecord() async {
+  void _saveRecord() async {
     setState(() {
       _showLoader = true;
     });

@@ -3,9 +3,9 @@ import 'package:vehicles_app/models/procedure.dart';
 class Detail {
   int id = 0;
   Procedure procedure = Procedure(id: 0, description: '', price: 0);
-  double laborPrice = 0;
-  double sparePartsPrice = 0;
-  double totalPrice = 0;
+  int laborPrice = 0;
+  int sparePartsPrice = 0;
+  int totalPrice = 0;
   String? remarks = '';
 
   Detail({
