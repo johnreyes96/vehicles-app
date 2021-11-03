@@ -1,6 +1,11 @@
+import 'package:adaptive_dialog/adaptive_dialog.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
+import 'package:vehicles_app/components/loader_component.dart';
+import 'package:vehicles_app/helpers/api_helper.dart';
 import 'package:vehicles_app/models/history.dart';
+import 'package:vehicles_app/models/response.dart';
 import 'package:vehicles_app/models/token.dart';
 import 'package:vehicles_app/models/user.dart';
 import 'package:vehicles_app/models/vehicle.dart';
@@ -19,6 +24,8 @@ class VehicleInfoScreen extends StatefulWidget {
 }
 
 class _VehicleInfoScreenState extends State<VehicleInfoScreen> {
+  bool _showLoader = false;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -26,11 +33,13 @@ class _VehicleInfoScreenState extends State<VehicleInfoScreen> {
         title: Text('${widget.vehicle.brand.description} ${widget.vehicle.line} ${widget.vehicle.plaque}'),
       ),
       body: Center(
-        child: _getContent(),
+        child: _showLoader
+          ? LoaderComponent(text: 'Por favor espere...')
+          : _getContent()
       ),
       floatingActionButton: FloatingActionButton(
         child: Icon(Icons.add),
-        onPressed: () => _goAddHistory(History(
+        onPressed: () => _goHistory(History(
           date: '',
           dateLocal: '',
           details: [],
@@ -46,7 +55,7 @@ class _VehicleInfoScreenState extends State<VehicleInfoScreen> {
     );
   }
 
-  void _goAddHistory(History history) async {
+  void _goHistory(History history) async {
     String? result = await Navigator.push(
       context,
       MaterialPageRoute(
@@ -276,11 +285,100 @@ class _VehicleInfoScreenState extends State<VehicleInfoScreen> {
   }
 
   Widget _noContent() {
-    return Container();
+    return Center(
+      child: Container(
+        margin: EdgeInsets.all(20),
+        child: Text(
+          'El vehículo no tiene historias registradas',
+          style: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.bold
+          ),
+        ),
+      )
+    );
   }
 
   Widget _getListView() {
-    return Container();
+    return RefreshIndicator(
+      onRefresh: _getVehicle,
+      child: ListView(
+        children: widget.vehicle.histories.map((e) {
+          return Card(
+            child: InkWell(
+              onTap: () => _goHistory(e),
+              child: Container(
+                margin: EdgeInsets.all(10),
+                padding: EdgeInsets.all(5),
+                child: Row(
+                  children: <Widget>[
+                    Expanded(
+                      child: Container(
+                        margin: EdgeInsets.symmetric(horizontal: 10),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: <Widget>[
+                            Column(
+                              children: <Widget>[
+                                Text(
+                                  e.date,
+                                  style: TextStyle(
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.bold
+                                  ),
+                                ),
+                                Row(
+                                  children: <Widget>[
+                                    Text(
+                                      e.mileage.toString(),
+                                      style: TextStyle(
+                                        fontSize: 14,
+                                      ),
+                                    ),
+                                    SizedBox(width: 5),
+                                    Text(
+                                      e.remarks == null ? 'N/A' : e.remarks!,
+                                      style: TextStyle(
+                                        fontSize: 14,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                Row(
+                                  children: <Widget>[
+                                    Text(
+                                      e.totalLabor.toString(),
+                                      style: TextStyle(
+                                        fontSize: 14,
+                                      ),
+                                    ),
+                                    SizedBox(width: 5),
+                                    Text(
+                                      e.totalSpareParts.toString(),
+                                      style: TextStyle(
+                                        fontSize: 14,
+                                      )
+                                    )
+                                  ]
+                                )
+                              ]
+                            )
+                          ]
+                        )
+                      )
+                    ),
+                    Icon(
+                      Icons.arrow_forward_ios,
+                      size: 40
+                    )
+                  ]
+                )
+              )
+            )
+          );
+        }).toList(),
+      )
+    );
   }
 
   void _goEdit() async {
@@ -297,5 +395,51 @@ class _VehicleInfoScreenState extends State<VehicleInfoScreen> {
     if (result == 'yes') {
       //TODO: Pending refresh vehicle  info
     }
+  }
+
+  Future<Null> _getVehicle() async {
+    setState(() {
+      _showLoader = true;
+    });
+
+    var connectivityResult = await Connectivity().checkConnectivity();
+    if (connectivityResult == ConnectivityResult.none) {
+      setState(() {
+        _showLoader = false;
+      });
+
+      await showAlertDialog(
+        context: context,
+        title: 'Error',
+        message: 'Verifica que estés conectado a internet.',
+        actions: <AlertDialogAction>[
+          AlertDialogAction(key: null, label: 'Aceptar')
+        ]
+      );
+      return;
+    }
+
+    //TODO: pending to get the vehicle
+    Response response = await ApiHelper.getUser(widget.token, widget.user.id);
+
+    setState(() {
+      _showLoader = false;
+    });
+
+    if (!response.isSuccess) {
+      await showAlertDialog(
+        context: context,
+        title: 'Error',
+        message: response.message,
+        actions: <AlertDialogAction>[
+          AlertDialogAction(key: null, label: 'Aceptar')
+        ]
+      );
+      return;
+    }
+
+    // setState(() {
+    //   _user = response.result;
+    // });
   }
 }
