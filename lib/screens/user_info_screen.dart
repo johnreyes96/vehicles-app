@@ -12,6 +12,7 @@ import 'package:vehicles_app/models/user.dart';
 import 'package:vehicles_app/models/vehicle.dart';
 import 'package:vehicles_app/models/vehicle_type.dart';
 import 'package:vehicles_app/screens/user_screen.dart';
+import 'package:vehicles_app/screens/vehicle_info_screen.dart';
 import 'package:vehicles_app/screens/vehicle_screen.dart';
 
 class UserInfoScreen extends StatefulWidget {
@@ -48,7 +49,7 @@ class _UserInfoScreenState extends State<UserInfoScreen> {
       ),
       floatingActionButton: FloatingActionButton(
         child: Icon(Icons.add),
-        onPressed: () => _goVehicle(Vehicle(
+        onPressed: () => _goAddVehicle(Vehicle(
           brand: Brand(id: 0, description: ''),
           color: '',
           histories: [],
@@ -297,6 +298,21 @@ class _UserInfoScreenState extends State<UserInfoScreen> {
   }
 
   void _goVehicle(Vehicle vehicle) async{
+    String? result = await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => VehicleInfoScreen(
+        token: widget.token,
+        user: _user,
+        vehicle: vehicle
+      ))
+    );
+    if (result == 'yes') {
+      _getUser();
+    }
+  }
+
+  void _goAddVehicle(Vehicle vehicle) async{
     String? result = await Navigator.push(
       context,
       MaterialPageRoute(
