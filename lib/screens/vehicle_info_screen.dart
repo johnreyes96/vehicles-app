@@ -315,7 +315,7 @@ class _VehicleInfoScreenState extends State<VehicleInfoScreen> {
       child: Container(
         margin: EdgeInsets.all(20),
         child: Text(
-          'El vehículo no tiene historias registradas',
+          'El vehículo no tiene historias registradas.',
           style: TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.bold

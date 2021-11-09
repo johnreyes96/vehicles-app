@@ -2,6 +2,7 @@ import 'package:adaptive_dialog/adaptive_dialog.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:vehicles_app/components/loader_component.dart';
 import 'package:vehicles_app/helpers/api_helper.dart';
 import 'package:vehicles_app/models/detail.dart';
@@ -13,6 +14,7 @@ import 'package:vehicles_app/models/token.dart';
 import 'package:vehicles_app/models/user.dart';
 import 'package:vehicles_app/models/vehicle.dart';
 import 'package:vehicles_app/screens/detail_screen.dart';
+import 'package:vehicles_app/screens/history_screen.dart';
 
 class HistoryInfoScreen extends StatefulWidget {
   final Token token;
@@ -138,29 +140,287 @@ class _HistoryInfoScreenState extends State<HistoryInfoScreen> {
     return Container(
       margin: EdgeInsets.all(10),
       padding: EdgeInsets.all(5),
-      child: Row(
-        children: <Widget>[
-          Stack(
+      child: Column(
+        children: [
+          Row(
             children: <Widget>[
-              ClipRRect(
-                borderRadius: BorderRadius.circular(5),
-                child: CachedNetworkImage(
-                  imageUrl: widget.vehicle.imageFullPath,
-                  errorWidget: (context, url, err) => Icon(Icons.error),
-                  fit: BoxFit.cover,
-                  height: 100,
-                  width: 100,
-                  placeholder: (context, url) => Image(
-                    image: AssetImage('assets/vehicles_logo.png'),
-                    fit: BoxFit.cover,
-                    height: 100,
-                    width: 100,
+              Stack(
+                children: <Widget>[
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(5),
+                    child: CachedNetworkImage(
+                      imageUrl: widget.vehicle.imageFullPath,
+                      errorWidget: (context, url, err) => Icon(Icons.error),
+                      fit: BoxFit.cover,
+                      height: 100,
+                      width: 100,
+                      placeholder: (context, url) => Image(
+                        image: AssetImage('assets/vehicles_logo.png'),
+                        fit: BoxFit.cover,
+                        height: 100,
+                        width: 100,
+                      )
+                    )
                   )
+                ]
+              ),
+              Expanded(
+                child: Stack(
+                  children: [
+                    Container(
+                      margin: EdgeInsets.symmetric(horizontal: 10),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          Expanded(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: <Widget>[
+                                Row(
+                                  children: <Widget>[
+                                    Text(
+                                      'Tipo de vehículo: ',
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.bold
+                                      )
+                                    ),
+                                    Text(
+                                      widget.vehicle.vehicleType.description, 
+                                      style: TextStyle(
+                                        fontSize: 14,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                SizedBox(height: 5),
+                                Row(
+                                  children: <Widget>[
+                                    Text(
+                                      'Marca: ',
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.bold
+                                      )
+                                    ),
+                                    Text(
+                                      widget.vehicle.brand.description,
+                                      style: TextStyle(
+                                        fontSize: 14,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                SizedBox(height: 5),
+                                Row(
+                                  children: <Widget>[
+                                    Text(
+                                      'Modelo: ',
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.bold
+                                      )
+                                    ),
+                                    Text(
+                                      widget.vehicle.model.toString(),
+                                      style: TextStyle(
+                                        fontSize: 14,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                SizedBox(height: 5),
+                                Row(
+                                  children: <Widget>[
+                                    Text(
+                                      'Placa: ',
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.bold
+                                      )
+                                    ),
+                                    Text(
+                                      widget.vehicle.plaque,
+                                      style: TextStyle(
+                                        fontSize: 14,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                SizedBox(height: 5),
+                                Row(
+                                  children: <Widget>[
+                                    Text(
+                                      'Línea: ',
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.bold
+                                      )
+                                    ),
+                                    Text(
+                                      widget.vehicle.line,
+                                      style: TextStyle(
+                                        fontSize: 14
+                                      )
+                                    ),
+                                  ],
+                                ),
+                                SizedBox(height: 5),
+                                Row(
+                                  children: <Widget>[
+                                    Text(
+                                      'Color: ',
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.bold
+                                      )
+                                    ),
+                                    Text(
+                                      widget.vehicle.color,
+                                      style: TextStyle(
+                                        fontSize: 14
+                                      )
+                                    ),
+                                  ],
+                                ),
+                                SizedBox(height: 5),
+                                Row(
+                                  children: <Widget>[
+                                    Text(
+                                      'Comentarios: ',
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.bold
+                                      )
+                                    ),
+                                    Text(
+                                      widget.vehicle.remarks == null ? 'N/A' : widget.vehicle.remarks!,
+                                      style: TextStyle(
+                                        fontSize: 14
+                                      )
+                                    ),
+                                  ],
+                                ),
+                                SizedBox(height: 5),
+                                Row(
+                                  children: <Widget>[
+                                    Text(
+                                      '# Historias: ',
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.bold
+                                      )
+                                    ),
+                                    Text(
+                                      widget.vehicle.historiesCount.toString(),
+                                      style: TextStyle(
+                                        fontSize: 14
+                                      )
+                                    )
+                                  ]
+                                )
+                              ]
+                            )
+                          )
+                        ]
+                      )
+                    )
+                  ],
                 )
+              )
+            ]
+          ),
+          Stack(
+            children: [
+              Column(
+                children: <Widget>[
+                  SizedBox(height: 5),
+                  Divider(
+                    color: Colors.black,
+                    height: 4
+                  ),
+                  SizedBox(height: 5),
+                  Row(
+                    children: <Widget>[
+                      Text(
+                        'Descripción: ',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold
+                        )
+                      ),
+                      Text(
+                        _history.remarks == null ? 'N/A' : _history.remarks!,
+                        style: TextStyle(
+                          fontSize: 14
+                        )
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: 5),
+                  Row(
+                    children: <Widget>[
+                      Text(
+                        'Kilometraje: ',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold
+                        )
+                      ),
+                      Text(
+                        _history.mileage.toString(),
+                        style: TextStyle(
+                          fontSize: 14
+                        )
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: 5),
+                  Row(
+                    children: <Widget>[
+                      Text(
+                        'Valor Repuestos: ',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold
+                        )
+                      ),
+                      Text(
+                        '${NumberFormat.currency(symbol: '\$').format(_history.totalSpareParts)}',
+                        style: TextStyle(
+                          fontSize: 14
+                        )
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: 5),
+                  Row(
+                    children: <Widget>[
+                      Text(
+                        'Valor Mano Obra: ',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold
+                        )
+                      ),
+                      Text(
+                        '${NumberFormat.currency(symbol: '\$').format(_history.totalLabor)}',
+                        style: TextStyle(
+                          fontSize: 14
+                        )
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: 5),
+                  Row(
+                    children: <Widget>[
+                      Text(
+                        'Valor Total: ',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold
+                        )
+                      ),
+                      Text(
+                        '${NumberFormat.currency(symbol: '\$').format(_history.total)}',
+                        style: TextStyle(
+                          fontSize: 14
+                        )
+                      ),
+                    ],
+                  )
+                ],
               ),
               Positioned(
                 bottom: 0,
-                left: 60,
+                left: 280,
                 child: InkWell(
                   onTap: () => _goEdit(),
                   child: ClipRRect(
@@ -178,174 +438,125 @@ class _HistoryInfoScreenState extends State<HistoryInfoScreen> {
                   ),
                 )
               )
-            ]
+            ],
           ),
-          Expanded(
-            child: Container(
-              margin: EdgeInsets.symmetric(horizontal: 10),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  Expanded(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: <Widget>[
-                        Row(
-                          children: <Widget>[
-                            Text(
-                              'Tipo de vehículo: ',
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold
-                              )
-                            ),
-                            Text(
-                              widget.vehicle.vehicleType.description, 
-                              style: TextStyle(
-                                fontSize: 14,
-                              ),
-                            ),
-                          ],
-                        ),
-                        SizedBox(height: 5),
-                        Row(
-                          children: <Widget>[
-                            Text(
-                              'Marca: ',
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold
-                              )
-                            ),
-                            Text(
-                              widget.vehicle.brand.description,
-                              style: TextStyle(
-                                fontSize: 14,
-                              ),
-                            ),
-                          ],
-                        ),
-                        SizedBox(height: 5),
-                        Row(
-                          children: <Widget>[
-                            Text(
-                              'Modelo: ',
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold
-                              )
-                            ),
-                            Text(
-                              widget.vehicle.model.toString(),
-                              style: TextStyle(
-                                fontSize: 14,
-                              ),
-                            ),
-                          ],
-                        ),
-                        SizedBox(height: 5),
-                        Row(
-                          children: <Widget>[
-                            Text(
-                              'Placa: ',
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold
-                              )
-                            ),
-                            Text(
-                              widget.vehicle.plaque,
-                              style: TextStyle(
-                                fontSize: 14,
-                              ),
-                            ),
-                          ],
-                        ),
-                        SizedBox(height: 5),
-                        Row(
-                          children: <Widget>[
-                            Text(
-                              'Línea: ',
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold
-                              )
-                            ),
-                            Text(
-                              widget.vehicle.line,
-                              style: TextStyle(
-                                fontSize: 14
-                              )
-                            ),
-                          ],
-                        ),
-                        SizedBox(height: 5),
-                        Row(
-                          children: <Widget>[
-                            Text(
-                              'Color: ',
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold
-                              )
-                            ),
-                            Text(
-                              widget.vehicle.color,
-                              style: TextStyle(
-                                fontSize: 14
-                              )
-                            ),
-                          ],
-                        ),
-                        SizedBox(height: 5),
-                        Row(
-                          children: <Widget>[
-                            Text(
-                              'Comentarios: ',
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold
-                              )
-                            ),
-                            Text(
-                              widget.vehicle.remarks == null ? 'N/A' : widget.vehicle.remarks!,
-                              style: TextStyle(
-                                fontSize: 14
-                              )
-                            ),
-                          ],
-                        ),
-                        SizedBox(height: 5),
-                        Row(
-                          children: <Widget>[
-                            Text(
-                              '# Historias: ',
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold
-                              )
-                            ),
-                            Text(
-                              widget.vehicle.historiesCount.toString(),
-                              style: TextStyle(
-                                fontSize: 14
-                              )
-                            ),
-                          ],
-                        )
-                      ]
-                    ),
-                  )
-                ]
-              )
-            )
-          )
-        ]
+        ],
       )
     );
   }
 
   Widget _noContent() {
-    return Container();
+    return Center(
+      child: Container(
+        margin: EdgeInsets.all(20),
+        child: Text(
+          'La historia no tiene detalle registrados.',
+          style: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.bold
+          ),
+        ),
+      )
+    );
   }
 
   Widget _getListView() {
-    return Container();
+    return ListView(
+      children: _history.details.map((e) {
+        return Card(
+          child: InkWell(
+            onTap: () => _goDetail(e),
+            child: Container(
+              margin: EdgeInsets.all(10),
+              padding: EdgeInsets.all(5),
+              child: Row(
+                children: <Widget>[
+                  Expanded(
+                    child: Container(
+                      margin: EdgeInsets.symmetric(horizontal: 10),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: <Widget>[
+                          Column(
+                            children: <Widget>[
+                              Text(
+                                e.procedure.description,
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.bold
+                                ),
+                              ),
+                              Text(
+                                e.remarks == null ? 'N/A' : e.remarks!,
+                                style: TextStyle(
+                                  fontSize: 14
+                                ),
+                              ),
+                              Row(
+                                children: <Widget>[
+                                  Text(
+                                    'Mano de obra: ${NumberFormat.currency(symbol: '\$').format(e.totalLabor)}',
+                                    style: TextStyle(
+                                      fontSize: 14,
+                                    ),
+                                  ),
+                                ]
+                              ),
+                               Row(
+                                children: <Widget>[
+                                  Text(
+                                    'Repuestos: ${NumberFormat.currency(symbol: '\$').format(e.totalSpareParts)}',
+                                    style: TextStyle(
+                                      fontSize: 14,
+                                    ),
+                                  ),
+                                ]
+                              ),
+                               Row(
+                                children: <Widget>[
+                                  Text(
+                                    'Total: ${NumberFormat.currency(symbol: '\$').format(e.total)}',
+                                    style: TextStyle(
+                                      fontSize: 14,
+                                    ),
+                                  ),
+                                ]
+                              ),
+                            ]
+                          )
+                        ]
+                      )
+                    )
+                  ),
+                  Icon(
+                    Icons.arrow_forward_ios,
+                    size: 40
+                  )
+                ]
+              )
+            )
+          )
+        );
+      }).toList(),
+    );
   }
 
-  Widget _goEdit() {
-    return Container();
+  void _goEdit() async {
+    String? result = await Navigator.push(
+      context, 
+      MaterialPageRoute(
+        builder: (context) => HistoryScreen(
+          token: widget.token, 
+          user: widget.user,
+          vehicle: widget.vehicle,
+          history: _history,
+        )
+      )
+    );
+    if (result == 'yes') {
+      await _getHistory();
+    }
   }
+
+  _goDetail(Detail e) {}
 }
