@@ -139,6 +139,7 @@ class _DetailScreenState extends State<DetailScreen> {
             onChanged: (option) {
               setState(() {
                 _procedureId = option as int;
+                _laborPrice = _getPrice(_procedureId).toString();
               });
             },
             decoration: InputDecoration(
@@ -281,9 +282,13 @@ class _DetailScreenState extends State<DetailScreen> {
     return list;
   }
 
-  _save() {}
+  _save() {
+    if (!_validateFields()) {
+      return;
+    }
 
-  _confirmDelete() {}
+    widget.detail.id == 0 ? _addRecord() : _saveRecord();
+  }
 
   void _loadFieldValues() {
     _procedureId = widget.detail.procedure.id;
@@ -296,5 +301,233 @@ class _DetailScreenState extends State<DetailScreen> {
 
     _sparePartsPrice = widget.detail.sparePartsPrice.toString();
     _sparePartsPriceController.text = _sparePartsPrice;
+  }
+
+  bool _validateFields() {
+    bool isValid = true;
+    
+    if (_procedureId == 0) {
+      isValid = false;
+      _procedureIdShowError = true;
+      _procedureIdError = 'Debes seleccionar un procedimiento.';
+    } else {
+      _procedureIdShowError = false;
+    }
+    
+    if (_laborPrice.isEmpty) {
+      isValid = true;
+      _laborPriceShowError = true;
+      _laborPriceError = 'Debes ingresar un valor de mano de obra.';
+    } else {
+      _laborPriceShowError = false;
+      double laborPrice = double.parse(_laborPrice);
+      if (laborPrice < 0) {
+        isValid = true;
+        _laborPriceShowError = true;
+        _laborPriceError = 'Debes ingresar un valor de mano de obra positivo.';
+      } else {
+        _laborPriceShowError = false;
+      }
+    }
+    
+    if (_sparePartsPrice.isEmpty) {
+      isValid = true;
+      _sparePartsPriceShowError = true;
+      _sparePartsPriceError = 'Debes ingresar un valor de repuestos.';
+    } else {
+      _sparePartsPriceShowError = false;
+      double sparePartsPrice = double.parse(_sparePartsPrice);
+      if (sparePartsPrice < 0) {
+        isValid = true;
+        _sparePartsPriceShowError = true;
+        _sparePartsPriceError = 'Debes ingresar un valor de repuestos positivo.';
+      } else {
+        _sparePartsPriceShowError = false;
+      }
+    }
+    
+    setState(() { });
+    return isValid;
+  }
+
+  void _addRecord() async {
+    setState(() {
+      _showLoader = true;
+    });
+
+    var connectivityResult = await Connectivity().checkConnectivity();
+    if (connectivityResult == ConnectivityResult.none) {
+      setState(() {
+        _showLoader = false;
+      });
+
+      await showAlertDialog(
+        context: context,
+        title: 'Error',
+        message: 'Verifica que estés conectado a internet.',
+        actions: <AlertDialogAction>[
+          AlertDialogAction(key: null, label: 'Aceptar')
+        ]
+      );
+      return;
+    }
+
+    Map<String, dynamic> request = {
+      'historyId': widget.history.id,
+      'procedureId': _procedureId,
+      'laborPrice': int.parse(_laborPrice),
+      'sparePartsPrice': int.parse(_sparePartsPrice),
+      'remarks': _remarks
+    };
+
+    Response response = await ApiHelper.post(
+      '/api/Details/',
+      request,
+      widget.token
+    );
+
+    setState(() {
+      _showLoader = false;
+    });
+
+    if (!response.isSuccess) {
+      await showAlertDialog(
+        context: context,
+        title: 'Error',
+        message: response.message,
+        actions: <AlertDialogAction>[
+          AlertDialogAction(key: null, label: 'Aceptar')
+        ]
+      );
+      return;
+    }
+
+    Navigator.pop(context, 'yes');
+  }
+
+  void _saveRecord() async {
+    setState(() {
+      _showLoader = true;
+    });
+
+    var connectivityResult = await Connectivity().checkConnectivity();
+    if (connectivityResult == ConnectivityResult.none) {
+      setState(() {
+        _showLoader = false;
+      });
+
+      await showAlertDialog(
+        context: context,
+        title: 'Error',
+        message: 'Verifica que estés conectado a internet.',
+        actions: <AlertDialogAction>[
+          AlertDialogAction(key: null, label: 'Aceptar')
+        ]
+      );
+      return;
+    }
+
+    Map<String, dynamic> request = {
+      'id': widget.detail.id,
+      'historyId': widget.history.id,
+      'procedureId': _procedureId,
+      'laborPrice': int.parse(_laborPrice),
+      'sparePartsPrice': int.parse(_sparePartsPrice),
+      'remarks': _remarks
+    };
+
+    Response response = await ApiHelper.put(
+      '/api/Details/',
+      widget.detail.id.toString(),
+      request,
+      widget.token
+    );
+
+    setState(() {
+      _showLoader = false;
+    });
+
+    if (!response.isSuccess) {
+      await showAlertDialog(
+        context: context,
+        title: 'Error',
+        message: response.message,
+        actions: <AlertDialogAction>[
+          AlertDialogAction(key: null, label: 'Aceptar')
+        ]
+      );
+      return;
+    }
+
+    Navigator.pop(context, 'yes');
+  }
+
+  void _confirmDelete() async {
+    var response = await showAlertDialog(
+      context: context,
+      title: 'Confirmación',
+      message: '¿Estás seguro de querer borar el registro?',
+      actions: <AlertDialogAction>[
+        AlertDialogAction(key: 'no', label: 'No'),
+        AlertDialogAction(key: 'yes', label: 'Si')
+      ]
+    );
+
+    if (response == 'yes') {
+      _deleteRecord();
+    }
+  }
+
+  void _deleteRecord() async {
+    setState(() {
+      _showLoader = true;
+    });
+
+    var connectivityResult = await Connectivity().checkConnectivity();
+    if (connectivityResult == ConnectivityResult.none) {
+      setState(() {
+        _showLoader = false;
+      });
+
+      await showAlertDialog(
+        context: context,
+        title: 'Error',
+        message: 'Verifica que estés conectado a internet.',
+        actions: <AlertDialogAction>[
+          AlertDialogAction(key: null, label: 'Aceptar')
+        ]
+      );
+      return;
+    }
+
+    Response response = await ApiHelper.delete(
+      '/api/Details/',
+      widget.detail.id.toString(),
+      widget.token
+    );
+
+    setState(() {
+      _showLoader = false;
+    });
+
+    if (!response.isSuccess) {
+      await showAlertDialog(
+        context: context,
+        title: 'Error',
+        message: response.message,
+        actions: <AlertDialogAction>[
+          AlertDialogAction(key: null, label: 'Aceptar')
+        ]
+      );
+      return;
+    }
+
+    Navigator.pop(context, 'yes');
+  }
+  }
+
+  double _getPrice(int procedureId) {
+    //TODO Pending to implement
+    return 0;
   }
 }
