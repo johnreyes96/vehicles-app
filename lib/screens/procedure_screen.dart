@@ -296,7 +296,7 @@ class _ProcedureScreenState extends State<ProcedureScreen> {
     Navigator.pop(context, 'yes');
   }
 
-  void _confirmDelete() async{
+  void _confirmDelete() async {
     var response = await showAlertDialog(
       context: context,
       title: 'Confirmación',

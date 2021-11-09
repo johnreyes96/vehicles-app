@@ -524,7 +524,6 @@ class _DetailScreenState extends State<DetailScreen> {
 
     Navigator.pop(context, 'yes');
   }
-  }
 
   double _getPrice(int procedureId) {
     //TODO Pending to implement
