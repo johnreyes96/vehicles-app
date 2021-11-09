@@ -140,6 +140,7 @@ class _DetailScreenState extends State<DetailScreen> {
               setState(() {
                 _procedureId = option as int;
                 _laborPrice = _getPrice(_procedureId).toString();
+                _laborPriceController.text = _laborPrice;
               });
             },
             decoration: InputDecoration(
@@ -525,8 +526,9 @@ class _DetailScreenState extends State<DetailScreen> {
     Navigator.pop(context, 'yes');
   }
 
-  double _getPrice(int procedureId) {
-    //TODO Pending to implement
-    return 0;
+  int _getPrice(int procedureId) {
+    var procedures = _procedures.where((p) => p.id == procedureId).toList();
+    String priceString = procedures[0].price.toString();
+    return int.parse(priceString.substring(0, priceString.length - 2));
   }
 }
