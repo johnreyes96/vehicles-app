@@ -15,6 +15,7 @@ import 'package:vehicles_app/models/user.dart';
 import 'package:vehicles_app/models/vehicle.dart';
 import 'package:vehicles_app/screens/detail_screen.dart';
 import 'package:vehicles_app/screens/history_screen.dart';
+import 'package:vehicles_app/screens/vehicle_screen.dart';
 
 class HistoryInfoScreen extends StatefulWidget {
   final Token token;
@@ -31,11 +32,13 @@ class HistoryInfoScreen extends StatefulWidget {
 class _HistoryInfoScreenState extends State<HistoryInfoScreen> {
   bool _showLoader = false;
   late History _history;
+  late Vehicle _vehicle;
 
   @override
   void initState() {
     super.initState();
     _history = widget.history;
+    _vehicle = widget.vehicle;
   }
   
   @override
@@ -51,7 +54,7 @@ class _HistoryInfoScreenState extends State<HistoryInfoScreen> {
       ),
       floatingActionButton: FloatingActionButton(
         child: Icon(Icons.add),
-        onPressed: () => _goAddDetail(Detail(
+        onPressed: () => _goDetail(Detail(
           id: 0,
           procedure: Procedure(id: 0, description: '', price: 0),
           laborPrice: 0,
@@ -66,7 +69,7 @@ class _HistoryInfoScreenState extends State<HistoryInfoScreen> {
   Widget _getContent() {
     return Column(
       children: <Widget>[
-        _showHistoryInfo(),
+        _showVehicleInfo(),
         Expanded(
           child: _history.details.length == 0 ? _noContent() : _getListView()
         )
@@ -74,7 +77,7 @@ class _HistoryInfoScreenState extends State<HistoryInfoScreen> {
     );
   }
 
-  void _goAddDetail(Detail detail) async {
+  void _goDetail(Detail detail) async {
     String? result = await Navigator.push(
       context,
       MaterialPageRoute(
@@ -136,7 +139,7 @@ class _HistoryInfoScreenState extends State<HistoryInfoScreen> {
     });
   }
 
-  _showHistoryInfo() {
+  _showVehicleInfo() {
     return Container(
       margin: EdgeInsets.all(10),
       padding: EdgeInsets.all(5),
@@ -149,7 +152,7 @@ class _HistoryInfoScreenState extends State<HistoryInfoScreen> {
                   ClipRRect(
                     borderRadius: BorderRadius.circular(5),
                     child: CachedNetworkImage(
-                      imageUrl: widget.vehicle.imageFullPath,
+                      imageUrl: _vehicle.imageFullPath,
                       errorWidget: (context, url, err) => Icon(Icons.error),
                       fit: BoxFit.cover,
                       height: 100,
@@ -160,6 +163,26 @@ class _HistoryInfoScreenState extends State<HistoryInfoScreen> {
                         height: 100,
                         width: 100,
                       )
+                    )
+                  ),
+                  Positioned(
+                    bottom: 0,
+                    left: 60,
+                    child: InkWell(
+                      onTap: () => _goEditVehicle(),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(30),
+                        child: Container(
+                          color: Colors.green[50],
+                          height: 40,
+                          width: 40,
+                          child: Icon(
+                            Icons.edit,
+                            size: 30,
+                            color: Colors.blue
+                          )
+                        )
+                      ),
                     )
                   )
                 ]
@@ -185,7 +208,7 @@ class _HistoryInfoScreenState extends State<HistoryInfoScreen> {
                                       )
                                     ),
                                     Text(
-                                      widget.vehicle.vehicleType.description, 
+                                      _vehicle.vehicleType.description, 
                                       style: TextStyle(
                                         fontSize: 14,
                                       ),
@@ -202,7 +225,7 @@ class _HistoryInfoScreenState extends State<HistoryInfoScreen> {
                                       )
                                     ),
                                     Text(
-                                      widget.vehicle.brand.description,
+                                      _vehicle.brand.description,
                                       style: TextStyle(
                                         fontSize: 14,
                                       ),
@@ -219,7 +242,7 @@ class _HistoryInfoScreenState extends State<HistoryInfoScreen> {
                                       )
                                     ),
                                     Text(
-                                      widget.vehicle.model.toString(),
+                                      _vehicle.model.toString(),
                                       style: TextStyle(
                                         fontSize: 14,
                                       ),
@@ -236,7 +259,7 @@ class _HistoryInfoScreenState extends State<HistoryInfoScreen> {
                                       )
                                     ),
                                     Text(
-                                      widget.vehicle.plaque,
+                                      _vehicle.plaque,
                                       style: TextStyle(
                                         fontSize: 14,
                                       ),
@@ -253,7 +276,7 @@ class _HistoryInfoScreenState extends State<HistoryInfoScreen> {
                                       )
                                     ),
                                     Text(
-                                      widget.vehicle.line,
+                                      _vehicle.line,
                                       style: TextStyle(
                                         fontSize: 14
                                       )
@@ -270,7 +293,7 @@ class _HistoryInfoScreenState extends State<HistoryInfoScreen> {
                                       )
                                     ),
                                     Text(
-                                      widget.vehicle.color,
+                                      _vehicle.color,
                                       style: TextStyle(
                                         fontSize: 14
                                       )
@@ -287,7 +310,7 @@ class _HistoryInfoScreenState extends State<HistoryInfoScreen> {
                                       )
                                     ),
                                     Text(
-                                      widget.vehicle.remarks == null ? 'N/A' : widget.vehicle.remarks!,
+                                      _vehicle.remarks == null ? 'N/A' : _vehicle.remarks!,
                                       style: TextStyle(
                                         fontSize: 14
                                       )
@@ -304,7 +327,7 @@ class _HistoryInfoScreenState extends State<HistoryInfoScreen> {
                                       )
                                     ),
                                     Text(
-                                      widget.vehicle.historiesCount.toString(),
+                                      _vehicle.historiesCount.toString(),
                                       style: TextStyle(
                                         fontSize: 14
                                       )
@@ -422,7 +445,7 @@ class _HistoryInfoScreenState extends State<HistoryInfoScreen> {
                 bottom: 0,
                 left: 280,
                 child: InkWell(
-                  onTap: () => _goEdit(),
+                  onTap: () => _goEditHistory(),
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(30),
                     child: Container(
@@ -495,7 +518,7 @@ class _HistoryInfoScreenState extends State<HistoryInfoScreen> {
                               Row(
                                 children: <Widget>[
                                   Text(
-                                    'Mano de obra: ${NumberFormat.currency(symbol: '\$').format(e.totalLabor)}',
+                                    'Mano de obra: ${NumberFormat.currency(symbol: '\$').format(e.laborPrice)}',
                                     style: TextStyle(
                                       fontSize: 14,
                                     ),
@@ -505,7 +528,7 @@ class _HistoryInfoScreenState extends State<HistoryInfoScreen> {
                                Row(
                                 children: <Widget>[
                                   Text(
-                                    'Repuestos: ${NumberFormat.currency(symbol: '\$').format(e.totalSpareParts)}',
+                                    'Repuestos: ${NumberFormat.currency(symbol: '\$').format(e.sparePartsPrice)}',
                                     style: TextStyle(
                                       fontSize: 14,
                                     ),
@@ -515,7 +538,7 @@ class _HistoryInfoScreenState extends State<HistoryInfoScreen> {
                                Row(
                                 children: <Widget>[
                                   Text(
-                                    'Total: ${NumberFormat.currency(symbol: '\$').format(e.total)}',
+                                    'Total: ${NumberFormat.currency(symbol: '\$').format(e.totalPrice)}',
                                     style: TextStyle(
                                       fontSize: 14,
                                     ),
@@ -541,7 +564,7 @@ class _HistoryInfoScreenState extends State<HistoryInfoScreen> {
     );
   }
 
-  void _goEdit() async {
+  void _goEditHistory() async {
     String? result = await Navigator.push(
       context, 
       MaterialPageRoute(
@@ -558,5 +581,64 @@ class _HistoryInfoScreenState extends State<HistoryInfoScreen> {
     }
   }
 
-  _goDetail(Detail e) {}
+  void _goEditVehicle() async {
+    String? result = await Navigator.push(
+      context, 
+      MaterialPageRoute(
+        builder: (context) => VehicleScreen(
+          token: widget.token, 
+          user: widget.user,
+          vehicle: widget.vehicle,
+        )
+      )
+    );
+    if (result == 'yes') {
+      await _getVehicle();
+    }
+  }
+
+  Future<Null> _getVehicle() async {
+    setState(() {
+      _showLoader = true;
+    });
+
+    var connectivityResult = await Connectivity().checkConnectivity();
+    if (connectivityResult == ConnectivityResult.none) {
+      setState(() {
+        _showLoader = false;
+      });
+
+      await showAlertDialog(
+        context: context,
+        title: 'Error',
+        message: 'Verifica que estés conectado a internet.',
+        actions: <AlertDialogAction>[
+          AlertDialogAction(key: null, label: 'Aceptar')
+        ]
+      );
+      return;
+    }
+
+    Response response = await ApiHelper.getVehicle(widget.token, _vehicle.id.toString());
+
+    setState(() {
+      _showLoader = false;
+    });
+
+    if (!response.isSuccess) {
+      await showAlertDialog(
+        context: context,
+        title: 'Error',
+        message: response.message,
+        actions: <AlertDialogAction>[
+          AlertDialogAction(key: null, label: 'Aceptar')
+        ]
+      );
+      return;
+    }
+
+    setState(() {
+      _vehicle = response.result;
+    });
+  }
 }
