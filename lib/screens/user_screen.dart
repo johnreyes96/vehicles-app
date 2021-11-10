@@ -245,7 +245,7 @@ class _UserScreenState extends State<UserScreen> {
     return isValid;
   }
 
-  _addRecord() async {
+  void _addRecord() async {
     setState(() {
       _showLoader = true;
     });
