@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 
+import 'package:vehicles_app/helpers/constants.dart';
 import 'package:vehicles_app/models/brand.dart';
 import 'package:vehicles_app/models/document_type.dart';
 import 'package:vehicles_app/models/history.dart';
@@ -10,7 +11,6 @@ import 'package:vehicles_app/models/token.dart';
 import 'package:vehicles_app/models/user.dart';
 import 'package:vehicles_app/models/vehicle.dart';
 import 'package:vehicles_app/models/vehicle_type.dart';
-import 'constants.dart';
 
 class ApiHelper {
 
@@ -124,18 +124,13 @@ class ApiHelper {
     return Response(isSuccess: true, result: list);
   }
 
-  static Future<Response> getDocumentTypes(Token token) async {
-    if (!_validToken(token)) {
-      return Response(isSuccess: false, message: 'Sus credenciales se han vencido, por favor cierre sesión y vuelva a ingresar al sistema.');
-    }
-    
+  static Future<Response> getDocumentTypes() async {
     var url = Uri.parse('${Constants.apiUrl}/api/DocumentTypes');
     var response = await http.get(
       url,
       headers: {
         'content-type' : 'application/json',
         'accept' : 'application/json',
-        'authorization': 'bearer ${token.token}',
       },
     );
 
@@ -276,6 +271,24 @@ class ApiHelper {
         'content-Type': 'application/json',
         'accept': 'application/json',
         'authorization': 'bearer ${token.token}'
+      },
+      body: jsonEncode(request)
+    );
+
+    if (response.statusCode >= 400) {
+      return Response(isSuccess: false, message: response.body);
+    }
+
+    return Response(isSuccess: true);
+  }
+
+  static Future<Response> postNoToken(String controller, Map<String, dynamic> request) async {
+    var url = Uri.parse('${Constants.apiUrl}$controller');
+    var response = await http.post(
+      url,
+      headers: {
+        'content-Type': 'application/json',
+        'accept': 'application/json',
       },
       body: jsonEncode(request)
     );
