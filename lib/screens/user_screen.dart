@@ -19,8 +19,9 @@ import 'package:vehicles_app/screens/take_picture_screen.dart';
 class UserScreen extends StatefulWidget {
   final Token token;
   final User user;
+  final bool myProfile;
 
-  UserScreen({required this.token, required this.user});
+  UserScreen({required this.token, required this.user, required this.myProfile});
 
   @override
   _UserScreenState createState() => _UserScreenState();
@@ -152,19 +153,33 @@ class _UserScreenState extends State<UserScreen> {
             : SizedBox(width: 20,),
           widget.user.id.isEmpty 
             ? Container() 
-            : Expanded(
-                child: ElevatedButton(
-                  child: Text('Borrar'),
-                  style: ButtonStyle(
-                    backgroundColor: MaterialStateProperty.resolveWith<Color>(
-                      (Set<MaterialState> states) {
-                        return Color(0xFFB4161B);
-                      }
+            : widget.myProfile
+              ? Expanded(
+                  child: ElevatedButton(
+                    child: Text('Cambiar Contraseña'),
+                    style: ButtonStyle(
+                      backgroundColor: MaterialStateProperty.resolveWith<Color>(
+                        (Set<MaterialState> states) {
+                          return Color(0xFFB4161B);
+                        }
+                      ),
                     ),
+                    onPressed: () => _changePassword(), 
                   ),
-                  onPressed: () => _confirmDelete(), 
-              ),
-          ),
+                )
+              : Expanded(
+                  child: ElevatedButton(
+                    child: Text('Borrar'),
+                    style: ButtonStyle(
+                      backgroundColor: MaterialStateProperty.resolveWith<Color>(
+                        (Set<MaterialState> states) {
+                          return Color(0xFFB4161B);
+                        }
+                      ),
+                    ),
+                    onPressed: () => _confirmDelete(), 
+                  ),
+                ),
         ],
       ),
     );
@@ -767,4 +782,6 @@ class _UserScreenState extends State<UserScreen> {
     _phoneNumber = widget.user.phoneNumber;
     _phoneNumberController.text = _phoneNumber;
   }
+
+  _changePassword() {}
 } 
