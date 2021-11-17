@@ -18,8 +18,9 @@ import 'package:vehicles_app/screens/vehicle_screen.dart';
 class UserInfoScreen extends StatefulWidget {
   final Token token;
   final User user;
+  final bool isAdmin;
 
-  UserInfoScreen({required this.token, required this.user});
+  UserInfoScreen({required this.token, required this.user, required this.isAdmin});
 
   @override
   _UserInfoScreenState createState() => _UserInfoScreenState();
@@ -305,7 +306,8 @@ class _UserInfoScreenState extends State<UserInfoScreen> {
         builder: (context) => VehicleInfoScreen(
         token: widget.token,
         user: _user,
-        vehicle: vehicle
+        vehicle: vehicle,
+        isAdmin: widget.isAdmin
       ))
     );
     if (result == 'yes') {

@@ -7,6 +7,7 @@ import 'package:vehicles_app/screens/document_types_screen.dart';
 import 'package:vehicles_app/screens/brands_screen.dart';
 import 'package:vehicles_app/screens/login_screen.dart';
 import 'package:vehicles_app/screens/procedures_screen.dart';
+import 'package:vehicles_app/screens/user_info_screen.dart';
 import 'package:vehicles_app/screens/user_screen.dart';
 import 'package:vehicles_app/screens/users_screen.dart';
 import 'package:vehicles_app/screens/vehicle_types_screen.dart';
@@ -184,7 +185,18 @@ class _HomeScreenState extends State<HomeScreen> {
           ListTile(
             leading: Icon(Icons.two_wheeler),
             title: const Text('Mis vehículos'),
-            onTap: () { }
+            onTap: () {
+              Navigator.push(
+                context, 
+                MaterialPageRoute(
+                  builder: (context) => UserInfoScreen(
+                    token: widget.token,
+                    user: widget.token.user,
+                    isAdmin: false
+                  )
+                )
+              );
+            }
           ),
           Divider(
             color: Colors.black, 
