@@ -14,6 +14,7 @@ import 'package:vehicles_app/models/document_type.dart';
 import 'package:vehicles_app/models/response.dart';
 import 'package:vehicles_app/models/token.dart';
 import 'package:vehicles_app/models/user.dart';
+import 'package:vehicles_app/screens/change_password_screen.dart';
 import 'package:vehicles_app/screens/take_picture_screen.dart';
 
 class UserScreen extends StatefulWidget {
@@ -783,5 +784,14 @@ class _UserScreenState extends State<UserScreen> {
     _phoneNumberController.text = _phoneNumber;
   }
 
-  _changePassword() {}
+  void _changePassword() async {
+    await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => ChangePasswordScreen(
+          token: widget.token
+        )
+      )
+    );
+  }
 } 
