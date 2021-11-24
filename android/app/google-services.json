@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "725849014051",
+    "project_id": "vehicles-6bc9a",
+    "storage_bucket": "vehicles-6bc9a.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:725849014051:android:41f153e1f68b0d406a1696",
+        "android_client_info": {
+          "package_name": "com.sare.vehicles"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "725849014051-sbpnovja8hlbpesf5op1lr447gnl8alq.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.sare.vehicles",
+            "certificate_hash": "fc1ae277f74ac664bc483018e48967db252ee8f2"
+          }
+        },
+        {
+          "client_id": "725849014051-vcdqb7pu4kd95676eisl3dfal51crule.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCgtVFQmjUItw96lbe3fwkdDWv7lAbxXck"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "725849014051-vcdqb7pu4kd95676eisl3dfal51crule.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
