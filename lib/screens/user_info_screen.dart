@@ -6,6 +6,7 @@ import 'package:url_launcher/url_launcher.dart';
 
 import 'package:vehicles_app/components/loader_component.dart';
 import 'package:vehicles_app/helpers/api_helper.dart';
+import 'package:vehicles_app/helpers/regex_helper.dart';
 import 'package:vehicles_app/models/brand.dart';
 import 'package:vehicles_app/models/response.dart';
 import 'package:vehicles_app/models/token.dart';
@@ -204,7 +205,7 @@ class _UserInfoScreenState extends State<UserInfoScreen> {
                               )
                             ),
                             Text(
-                              _user.phoneNumber, 
+                              '+${_user.countryCode} ${_user.phoneNumber}', 
                               style: TextStyle(
                                 fontSize: 14
                               )
@@ -467,7 +468,7 @@ class _UserInfoScreenState extends State<UserInfoScreen> {
               color: Colors.blue,
               child: IconButton(
                 icon: Icon(Icons.call, color: Colors.white,),
-                onPressed: () => launch('tel://${widget.user.phoneNumber}'), 
+                onPressed: () => launch('tel://+${widget.user.countryCode}${RegexHelper.removeBlankSpaces(widget.user.phoneNumber)}'), 
               ),
             ),
           ),       
@@ -491,7 +492,7 @@ class _UserInfoScreenState extends State<UserInfoScreen> {
 
   void _sendMessage() async {
     final link = WhatsAppUnilink(
-      phoneNumber: '${widget.user.phoneNumber}',
+      phoneNumber: '+${widget.user.countryCode}${RegexHelper.removeBlankSpaces(widget.user.phoneNumber)}',
       text: 'Hola te escribo del taller.',
     );
     await launch('$link');  
