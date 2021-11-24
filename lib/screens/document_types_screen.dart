@@ -175,7 +175,6 @@ class _DocumentTypesScreenState extends State<DocumentTypesScreen> {
               Text('Escriba las primeras letras del tipo de documento'),
               SizedBox(height: 10,),
               TextField(
-                autofocus: true,
                 decoration: InputDecoration(
                   hintText: 'Criterio de búsqueda...',
                   labelText: 'Buscar',
