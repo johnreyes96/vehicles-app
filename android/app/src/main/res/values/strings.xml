@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">Vehicles</string>
+    <string name="facebook_app_id">144912531190037</string>
+    <string name="fb_login_protocol_scheme">fb144912531190037</string>
+</resources>

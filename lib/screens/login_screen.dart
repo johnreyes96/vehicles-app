@@ -3,6 +3,7 @@ import 'package:adaptive_dialog/adaptive_dialog.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
 import 'package:email_validator/email_validator.dart';
+import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:http/http.dart' as http;
@@ -151,7 +152,8 @@ class _LoginScreenState extends State<LoginScreen> {
               _showRegisterButton()
             ],
           ),
-          _showGoogleLoginButton()
+          _showGoogleLoginButton(),
+          _showFacebookLoginButton(),
         ],
       ),
     );
@@ -354,5 +356,38 @@ class _LoginScreenState extends State<LoginScreen> {
     var googleSignIn = GoogleSignIn();
     await googleSignIn.signOut();
     var user = await googleSignIn.signIn();
+  }
+
+  Widget _showFacebookLoginButton() {
+    return Row(
+      children: <Widget>[
+        Expanded(
+          child: ElevatedButton.icon(
+            onPressed: () => _loginFacebook(),
+            icon: FaIcon(
+              FontAwesomeIcons.facebook,
+              color: Colors.white,
+            ),
+            label: Text('Iniciar sesión con Facebook'),
+            style: ElevatedButton.styleFrom(
+              primary: Color(0xFF3B5998),
+              onPrimary: Colors.white
+            )
+          )
+        )
+      ],
+    );
+  }
+
+  void _loginFacebook() async {
+    await FacebookAuth.i.logOut();
+    var result = await FacebookAuth.i.login(
+      permissions: ["public_profile", "email"]
+    );
+    if (result.status == LoginStatus.success) {
+      final requestData = await FacebookAuth.i.getUserData(
+        fields: "email, name, picture.width(800).height(800), first_name, last_name"
+      );
+    }
   }
 }
