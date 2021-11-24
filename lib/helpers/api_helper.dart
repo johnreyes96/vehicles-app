@@ -217,7 +217,7 @@ class ApiHelper {
       return Response(isSuccess: false, message: 'Sus credenciales se han vencido, por favor cierre sesión y vuelva a ingresar al sistema.');
     }
     
-    var url = Uri.parse('${Constants.apiUrl}/api/User/$id');
+    var url = Uri.parse('${Constants.apiUrl}/api/Users/$id');
     var response = await http.get(
       url,
       headers: {

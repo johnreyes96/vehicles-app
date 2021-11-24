@@ -198,7 +198,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
       isValid = false;
       _confirmPasswordShowError = true;
       _confirmPasswordError = 'Debes ingresar una confirmación de tu nueva contraseña de al menos 6 carácteres.';
-    } else if (_confirmPassword != _currentPassword) {
+    } else if (_confirmPassword != _newPassword) {
       isValid = false;
       _confirmPasswordShowError = true;
       _confirmPasswordError = 'La nueva contraseña y la confirmación no son iguales.';
