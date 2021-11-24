@@ -356,6 +356,16 @@ class _LoginScreenState extends State<LoginScreen> {
     var googleSignIn = GoogleSignIn();
     await googleSignIn.signOut();
     var user = await googleSignIn.signIn();
+
+    Map<String, dynamic> request = {
+      'email': user?.email,
+      'id': user?.id,
+      'loginType': 1,
+      'fullname': user?.displayName,
+      'photoURL': user?.photoUrl,
+    };
+
+    await _socialLogin(request);
   }
 
   Widget _showFacebookLoginButton() {
@@ -388,6 +398,64 @@ class _LoginScreenState extends State<LoginScreen> {
       final requestData = await FacebookAuth.i.getUserData(
         fields: "email, name, picture.width(800).height(800), first_name, last_name"
       );
+
+      var picture = requestData['picture'];
+      var data = picture['data'];
+
+      Map<String, dynamic> request = {
+        'email': requestData['email'],
+        'id': requestData['id'],
+        'loginType': 2,
+        'fullname': requestData['name'],
+        'photoURL': data['url'],
+        'firstName': requestData['first_name'],
+        'lastName': requestData['last_name'],
+      };
+
+      await _socialLogin(request);
     }
+  }
+
+  Future _socialLogin(Map<String, dynamic> request) async {
+    var url = Uri.parse('${Constants.apiUrl}/api/account/SocialLogin');
+    var response = await http.post(
+      url,
+      headers: {
+        'content-Type': 'application/json',
+        'accept': 'application/json'
+      },
+      body: jsonEncode(request)
+    );
+
+    setState(() {
+      _showLoader = false;
+    });
+
+    if (response.statusCode >= 400) {
+      await showAlertDialog(
+        context: context,
+        title: 'Error',
+        message: 'El usuario ya inició sesión previamente por email o por otra red social',
+        actions: <AlertDialogAction>[
+          AlertDialogAction(key: null, label: 'Aceptar')
+        ]
+      );
+      return;
+    }
+
+    var body = response.body;
+
+    if (_rememberme) {
+      _storeUser(body);
+    }
+
+    var decodedJson = jsonDecode(body);
+    var token = Token.fromJson(decodedJson);
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(
+        builder: (context) => HomeScreen(token: token)
+      )
+    );
   }
 }
