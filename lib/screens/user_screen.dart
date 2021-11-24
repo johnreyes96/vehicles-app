@@ -733,24 +733,39 @@ class _UserScreenState extends State<UserScreen> {
   }
 
   void _takePicture() async {
-    if (widget.user.loginType != 0) {
-      _validateUserSocial();
+    WidgetsFlutterBinding.ensureInitialized();
+    final cameras = await availableCameras();
+    var camera = cameras.first;
+    var responseCamera = await showAlertDialog(
+        context: context,
+        title: 'Seleccionar cámara',
+        message: '¿Qué cámara desea utilizar?',
+        actions: <AlertDialogAction>[
+          AlertDialogAction(key: 'front', label: 'Delantera'),
+          AlertDialogAction(key: 'back', label: 'Trasera'),
+          AlertDialogAction(key: 'cancel', label: 'Cancelar'),
+        ]);
+
+    if (responseCamera == 'cancel') {
       return;
     }
 
-    WidgetsFlutterBinding.ensureInitialized();
-    final cameras = await availableCameras();
-    final firstCamera = cameras.first;
+    if (responseCamera == 'back') {
+      camera = cameras.first;
+    }
+
+    if (responseCamera == 'front') {
+      camera = cameras.last;
+    }
+
     Response? response = await Navigator.push(
-      context, 
-      MaterialPageRoute(
-        builder: (context) => TakePictureScreen(camera: firstCamera,)
-      )
-    );
+        context,
+        MaterialPageRoute(
+            builder: (context) => TakePictureScreen(camera: camera)));
     if (response != null) {
       setState(() {
-          _photoChanged = true;
-          _image = response.result;
+        _photoChanged = true;
+        _image = response.result;
       });
     }
   }
